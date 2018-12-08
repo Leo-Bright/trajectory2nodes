@@ -35,3 +35,6 @@ for line in f_500K_ways.readlines():
                 node = nodes[index]
                 output_nodes.append(node)
     f_500K_nodes.write(str(output_nodes) + '\n')
+
+f_500K_ways.close()
+f_500K_nodes.close()
