@@ -19,7 +19,7 @@ conn.close()
 
 
 walks = []
-f_500K_ways = open(r'5k.w2v.txt', 'r')
+f_500K_ways = open(r'500k.w2v.txt', 'r')
 f_500K_node2vec = open(r'500k.nodes.vector', 'w+')
 f_500K_nodes = open(r'500k.nodes.txt', 'w+')
 for line in f_500K_ways.readlines():
