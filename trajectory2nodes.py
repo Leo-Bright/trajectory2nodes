@@ -3,7 +3,7 @@ from gensim.models import Word2Vec
 import json
 
 # 数据库连接参数
-conn = psycopg2.connect(database="sanfrancisco", user="osmuser", password="pass", host="172.19.7.241", port="5432")
+conn = psycopg2.connect(database="porto", user="osmuser", password="pass", host="172.19.7.241", port="5432")
 cur = conn.cursor()
 
 cur.execute("select gid, osm_id, source, target, reverse, priority from bfmap_ways;")
@@ -28,10 +28,10 @@ cur.close()
 conn.close()
 print(len(nodes_count.keys()))
 
-with open(r'sanfrancisco_road_segment.json', 'w+') as network:
+with open(r'porto_road_segment.json', 'w+') as network:
     network.write(json.dumps(road_segments))
 
-with open(r'sanfrancisco_road_segment.network', 'w+') as network:
+with open(r'porto_road_segment.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
         gid, osm_id, source, target, reverse, priority = road_segment
@@ -44,7 +44,7 @@ with open(r'sanfrancisco_road_segment.network', 'w+') as network:
             network.write(str(gid) + " " + str(osm_id) + " " + str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
 
-with open(r'sanfrancisco.network', 'w+') as network:
+with open(r'porto_LINE.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
         gid, osm_id, source, target, reverse, priority = road_segment
@@ -56,6 +56,13 @@ with open(r'sanfrancisco.network', 'w+') as network:
         else:
             network.write(str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
+
+with open(r'porto.network', 'w+') as network:
+    network.write("source_node_id\ttarget_node_id\n")
+    for road_segment in road_segments:
+        gid, osm_id, source, target, reverse, priority = road_segment
+        network.write(str(source) + " " + str(target))
+        network.write("\n")
 
 # walks = []
 # f_500K_ways = open(r'500k.w2v.txt', 'r')
