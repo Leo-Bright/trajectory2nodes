@@ -7,7 +7,7 @@ import random
 from multiprocessing import Pool
 
 
-host = ['172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
+host = ['172.19.7.241', ]
 port = '1234'
 output_format = 'slimjson'
 
@@ -107,8 +107,8 @@ def main(input_dir, regex, output_file, threads):
     trajectories = get_trajectories(input_dir, regex)
 
     for idx, trajectory in enumerate(trajectories):
-        # host_idx = random.randint(0, len(host) - 1)
-        host_idx = idx % 4
+        host_idx = random.randint(0, len(host) - 1)
+        # host_idx = idx % 4
         pool.apply_async(func=process_trajectory,
                          args=(trajectory, host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
@@ -119,4 +119,4 @@ def main(input_dir, regex, output_file, threads):
 main(input_dir='sanfrancisco/dataset/',
      regex='.txt',
      output_file='sanfrancisco/trajectory/sanfrancisco.trajectory',
-     threads=8,)
+     threads=1,)
