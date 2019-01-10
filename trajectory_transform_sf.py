@@ -9,21 +9,21 @@ import random
 from multiprocessing import Process, Pool
 
 
-host = ['localhost']
+host = ['172.19.7.241', '172.19.7.242']
 port = '1234'
 output_format = 'slimjson'
 process_id = 0
 
 
-def process_trajectory(trajectory, host, port, output_format):
-    result = ''
+def process_trajectory(trajectory, host, port, output_format, output_file):
+    all_match_result = []
     part_count = len(trajectory) // 200
     for index in range(part_count + 1):
+        start = index * 200
         if index == part_count:
-            start = 0
+            end = len(trajectory)
         else:
-            start = len(trajectory) - (index + 1) * 200
-        end = len(trajectory) - index * 200
+            end = (index + 1) * 200
         samples = trajectory[start:end]
         # tmp = "batch-%s" % random.randint(0, sys.maxsize)
         # file = open(tmp, "w")
@@ -48,18 +48,26 @@ def process_trajectory(trajectory, host, port, output_format):
         except:
             print('connecting host error!')
 
+
         if not output.startswith('SUCCESS\n'):
-            sys.exit(1)
-        result += output_str[8:-1]
-        return result
+            # sys.exit(1)
+            print('Pay attention here!!! Here is a bad match action!@@@!!!!')
+            continue
+
+        recieve = ''
+        recieve += output_str[8:-1]
+        match_result = json.loads(recieve)
+        for index, obj in enumerate(match_result):
+            obj['time'] = samples[index]['time']
+        all_match_result += match_result
+    return all_match_result, output_file
 
 
-def post_process_trajectory(args):
-    print('here is in post_process: ', args)
-    mapped_trajectory = json.loads(args)
-    print(len(mapped_trajectory))
-    print(mapped_trajectory)
-
+def post_process_trajectory(result, output):
+    print('Here is in post_process:')
+    with open(output, 'a') as f:
+        f.write(json.dumps(result))
+    print('Post_process Done!')
 
 def get_trajectories(input_dir, regex):
     trajectory_files = []
@@ -92,10 +100,10 @@ def get_trajectories(input_dir, regex):
             }
             trajectory.append(point)
 
-        yield trajectory
+        yield trajectory[::-1]
 
 
-def main(input_dir, regex, output, threads):
+def main(input_dir, regex, output_file, threads):
 
     pool = Pool(threads)
 
@@ -104,7 +112,7 @@ def main(input_dir, regex, output, threads):
     for trajectory in trajectories:
         host_idx = random.randint(0, len(host) - 1)
         pool.apply_async(func=process_trajectory,
-                         args=(trajectory, host[host_idx], port, output_format),
+                         args=(trajectory, host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
@@ -112,5 +120,5 @@ def main(input_dir, regex, output, threads):
 
 main(input_dir='sanfrancisco/dataset/',
      regex='.txt',
-     output='sanfrancisco/trajectory/sanfrancisco.trajectory',
-     threads=2,)
+     output_file='sanfrancisco/trajectory/sanfrancisco.trajectory',
+     threads=6,)
