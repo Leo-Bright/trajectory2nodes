@@ -2,8 +2,6 @@ import pandas as pd
 import time
 import json
 import os
-import sys
-import optparse
 import socket
 import random
 from multiprocessing import Process, Pool
