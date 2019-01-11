@@ -11,7 +11,7 @@ port = '1234'
 output_format = 'slimjson'
 
 
-def process_trajectory(trajectory, host, port, output_format, output_file):
+def process_trajectory(id, trajectory, host, port, output_format, output_file):
     all_match_result = []
     part_count = len(trajectory) // 200
     for index in range(part_count + 1):
@@ -56,10 +56,11 @@ def process_trajectory(trajectory, host, port, output_format, output_file):
         for index, obj in enumerate(match_result):
             obj['time'] = samples[index]['time']
         all_match_result += match_result
-    return all_match_result, output_file
+    return (all_match_result, output_file + '_part' + str(id))
 
 
-def post_process_trajectory(result, output):
+def post_process_trajectory(args):
+    result, output = args
     print('Here is in post_process:')
     with open(output, 'a') as f:
         f.write(json.dumps(result))
@@ -109,7 +110,7 @@ def main(input_dir, regex, output_file, threads):
         # host_idx = random.randint(0, len(host) - 1)
         host_idx = idx % 4
         pool.apply_async(func=process_trajectory,
-                         args=(trajectory, host[host_idx], port, output_format, output_file),
+                         args=(idx, trajectory, host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
@@ -118,4 +119,4 @@ def main(input_dir, regex, output_file, threads):
 main(input_dir='sanfrancisco/dataset/',
      regex='.txt',
      output_file='sanfrancisco/trajectory/sanfrancisco.trajectory',
-     threads=8,)
+     threads=4,)
