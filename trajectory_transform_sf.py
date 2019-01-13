@@ -6,12 +6,12 @@ import socket
 from multiprocessing import Pool
 
 
-host = ['172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242', ]
+host = ['172.19.7.235', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
 port = '1234'
-output_format = 'slimjson'
+output_format = 'debug'
 
 
-def process_trajectory(id, trajectory_file, trajectory, host, port, output_format, output_file):
+def process_trajectory(trajectory_file, trajectory, host, port, output_format, output_file):
     all_match_result = []
     part_count = len(trajectory) // 200
     for index in range(part_count + 1):
@@ -52,9 +52,7 @@ def process_trajectory(id, trajectory_file, trajectory, host, port, output_forma
 
         recieve = ''
         recieve += output_str[8:-1]
-        match_result = json.loads(recieve)
-        for index, obj in enumerate(match_result):
-            obj['time'] = samples[index]['time']
+        match_result = json.loads(recieve.split('\n')[-1])
         all_match_result += match_result
     return (all_match_result, output_file + '_' + trajectory_file)
 
@@ -109,9 +107,9 @@ def main(input_dir, regex, output_file, threads):
 
     for idx, trajectory in enumerate(trajectories):
         # host_idx = random.randint(0, len(host) - 1)
-        host_idx = idx % 4
+        host_idx = idx % 7
         pool.apply_async(func=process_trajectory,
-                         args=(idx, trajectory[0], trajectory[1], host[host_idx], port, output_format, output_file),
+                         args=(trajectory[0], trajectory[1], host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
@@ -120,4 +118,4 @@ def main(input_dir, regex, output_file, threads):
 main(input_dir='sanfrancisco/dataset/',
      regex='.txt',
      output_file='sanfrancisco/trajectory/sanfrancisco.trajectory',
-     threads=4,)
+     threads=14, )
