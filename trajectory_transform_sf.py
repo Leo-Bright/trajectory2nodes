@@ -11,7 +11,7 @@ port = '1234'
 output_format = 'slimjson'
 
 
-def process_trajectory(id, trajectory, host, port, output_format, output_file):
+def process_trajectory(id, trajectory_file, trajectory, host, port, output_format, output_file):
     all_match_result = []
     part_count = len(trajectory) // 200
     for index in range(part_count + 1):
@@ -56,7 +56,7 @@ def process_trajectory(id, trajectory, host, port, output_format, output_file):
         for index, obj in enumerate(match_result):
             obj['time'] = samples[index]['time']
         all_match_result += match_result
-    return (all_match_result, output_file + '_part' + str(id))
+    return (all_match_result, output_file + '_' + trajectory_file)
 
 
 def post_process_trajectory(args):
@@ -65,6 +65,7 @@ def post_process_trajectory(args):
     with open(output, 'a') as f:
         f.write(json.dumps(result))
     print('Post_process Done!')
+
 
 def get_trajectories(input_dir, regex):
     trajectory_files = []
@@ -97,7 +98,7 @@ def get_trajectories(input_dir, regex):
             }
             trajectory.append(point)
 
-        yield trajectory[::-1]
+        yield (trajectory_file, trajectory[::-1])
 
 
 def main(input_dir, regex, output_file, threads):
@@ -110,7 +111,7 @@ def main(input_dir, regex, output_file, threads):
         # host_idx = random.randint(0, len(host) - 1)
         host_idx = idx % 4
         pool.apply_async(func=process_trajectory,
-                         args=(idx, trajectory, host[host_idx], port, output_format, output_file),
+                         args=(idx, trajectory[0], trajectory[1], host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
