@@ -67,21 +67,25 @@ def trajectories2road_sequence(input_dir):
 
 
 def main(input_dir, output_road, output_node):
+
+    road2node = {}
     conn = psycopg2.connect(database="sanfrancisco", user="osmuser", password="pass", host="localhost", port="5432")
     cur = conn.cursor()
-    sql = 'select source, target from bfmap_ways where gid='
+    sql = 'select gid, source, target from bfmap_ways;'
+    cur.execute(sql)
+    rows = cur.fetchall()
+
+    for row in rows:
+        (gid, source, target) = row
+        road2node[gid] = (source, target)
 
     for road_sequence in trajectories2road_sequence(input_dir):
         node_sequence = []
         new_road_sequence = []
+
         for road in road_sequence:
-            id = road['road']
-            cur.execute(sql + str(id))
-            rows = cur.fetchall()
-            if len(rows) == 0:
-                print('no result fetched!~ road id:' + str(id))
-                continue
-            (source, target) = rows[0]
+            gid = road['road']
+            (source, target) = road2node[gid]
             road['source'] = source
             road['target'] = target
             if road['heading'] == 'forward':
@@ -96,7 +100,6 @@ def main(input_dir, output_road, output_node):
 
         with open(output_road, 'w+') as f:
             f.write(json.dumps(new_road_sequence) + '\n')
-
 
         with open(output_node, 'w+') as f:
             f.write(json.dumps(node_sequence) + '\n')
