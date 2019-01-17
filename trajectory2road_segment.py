@@ -7,7 +7,7 @@ def get_inputs(directory):
     all_files = os.listdir(directory)
     for file in all_files:
         if file.find('.trajectory_new') >= 0:
-            with open(dir + file, 'r') as f:
+            with open(directory + file, 'r') as f:
                 yield json.loads(f.readline())
 
 
@@ -42,19 +42,19 @@ def trajectories2road_sequence(input_dir):
             else:
                 roads = matched['transition']['route']['roads']
                 if len(roads) > 1:
-                    time = matched['time']
+                    cur_time = matched['time']
                     if index >= trajectory_size - 1:
                         for road in roads[1:]:
                             if not equal_the_last(road_sequence, road):
-                                road['time'] = time
+                                road['time'] = cur_time
                                 road_sequence.append(road)
                     else:
                         next_matched = trajectory[index + 1]
                         next_time = next_matched['time']
-                        time_seg = (next_time - time) // (len(roads) - 1)
+                        time_seg = (next_time - cur_time) // (len(roads) - 1)
                         for i, road in enumerate(roads[1:]):
                             if not equal_the_last(road_sequence, road):
-                                new_time = time_seg + time
+                                new_time = time_seg * (i + 1) + cur_time
                                 road['time'] = new_time
                                 road_sequence.append(road)
                 else:
