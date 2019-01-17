@@ -24,5 +24,5 @@ def main(input_file, output_file, intervals):
 
 
 main(input_file='sanfrancisco/sequence/sf_trajectory_road_segment.sequence',
-     output_file='sanfrancisco/sequence/sf_travel_time.samples',
-     intervals=(15, ))
+     output_file='sanfrancisco/sequence/sf_travel_time_21.samples',
+     intervals=(21, ))
