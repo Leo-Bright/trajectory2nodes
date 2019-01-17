@@ -3,8 +3,8 @@ import json
 import os
 
 
-def get_inputs(dir):
-    all_files = os.listdir(dir)
+def get_inputs(directory):
+    all_files = os.listdir(directory)
     for file in all_files:
         if file.find('.trajectory_new') >= 0:
             with open(dir + file, 'r') as f:
@@ -69,7 +69,7 @@ def trajectories2road_sequence(input_dir):
 def main(input_dir, output_road, output_node):
 
     road2node = {}
-    conn = psycopg2.connect(database="sanfrancisco", user="osmuser", password="pass", host="localhost", port="5432")
+    conn = psycopg2.connect(database="sanfrancisco", user="osmuser", password="pass", host="172.19.7.241", port="5432")
     cur = conn.cursor()
     sql = 'select gid, source, target from bfmap_ways;'
     cur.execute(sql)
@@ -78,6 +78,9 @@ def main(input_dir, output_road, output_node):
     for row in rows:
         (gid, source, target) = row
         road2node[gid] = (source, target)
+
+    road_file = open(output_road, 'w+')
+    node_file = open(output_node, 'w+')
 
     for road_sequence in trajectories2road_sequence(input_dir):
         node_sequence = []
@@ -98,30 +101,13 @@ def main(input_dir, output_road, output_node):
                 node_sequence.append(source)
             new_road_sequence.append(road)
 
-        with open(output_road, 'w+') as f:
-            f.write(json.dumps(new_road_sequence) + '\n')
+        road_file.write(json.dumps(new_road_sequence) + '\n')
+        node_file.write('%s\n' % ' 0 '.join(map(str, node_sequence)))
 
-        with open(output_node, 'w+') as f:
-            f.write(json.dumps(node_sequence) + '\n')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    road_file.close()
+    node_file.close()
 
 
 main(input_dir='sanfrancisco/trajectory/',
-     output_road='sanfrancisco/road_sequence/sf_trajectory_road_segment.sequence',
-     output_node='sanfrancisco/road_sequence/sf_trajectory_node.sequence')
+     output_road='sanfrancisco/sequence/sf_trajectory_road_segment.sequence',
+     output_node='sanfrancisco/sequence/sf_trajectory_node.sequence')
