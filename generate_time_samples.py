@@ -10,9 +10,10 @@ def main(input_file, output_file, intervals):
             road_sequence = json.loads(line)
             size = len(road_sequence)
             for inter in intervals:
-                for i in range(size-inter):
-                    start_road = road_sequence[i]
-                    end_road = road_sequence[i + inter]
+                inter_size = size // inter
+                for i in range(inter_size):
+                    start_road = road_sequence[i * inter]
+                    end_road = road_sequence[-1] if i == inter_size -1 else road_sequence[(i + 1) * inter]
                     start_node = start_road['source'] if start_road['heading'] == 'forward' else start_road['target']
                     end_node = end_road['source'] if end_road['heading'] == 'backwark' else end_road['target']
                     travel_time = end_road['time'] - start_road['time']
@@ -24,4 +25,4 @@ def main(input_file, output_file, intervals):
 
 main(input_file='sanfrancisco/sequence/sf_trajectory_road_segment.sequence',
      output_file='sanfrancisco/sequence/sf_travel_time.samples',
-     intervals=(7, 14, 21, 35))
+     intervals=(15, ))
