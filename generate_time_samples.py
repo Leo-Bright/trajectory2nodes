@@ -41,7 +41,7 @@ def main(input_file, output_file, intervals):
                 for i in range(inter_size):
                     split_road_sequence = road_sequence[i * inter:-1] if i == inter_size - 1 else road_sequence[i * inter:(i + 1) * inter]
                     node_sequence = get_nodes_from_roads(split_road_sequence)
-                    travel_time = split_road_sequence[0]['time'] - split_road_sequence[-1]['time']
+                    travel_time = split_road_sequence[-1]['time'] - split_road_sequence[0]['time']
                     # print('start_road:', start_road, '\t end_node:', end_road)
                     output.write('%s\n' % ' '.join(map(str, node_sequence + [travel_time])))
     output.close()
