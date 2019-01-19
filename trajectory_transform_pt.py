@@ -1,7 +1,5 @@
-import pandas as pd
 import time
 import json
-import os
 import socket
 from multiprocessing import Pool
 
@@ -13,7 +11,7 @@ output_format = 'debug'
 
 def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 
-    split_size = 100
+    split_size = 200
 
     all_match_result = []
     part_count = len(tra_points) // split_size
@@ -25,7 +23,10 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
             end = (index + 1) * split_size
         samples = tra_points[start:end]
         # tmp = "batch-%s" % random.randint(0, sys.maxsize)
-        # file = open(tmp, "w")
+        with open('porto/dataset/tmp.sample', "a") as f:
+            f.write(str(len(samples)) + '\n')
+            f.write(json.dumps(samples) + '\n')
+
         post_str = '{' + '"format": {format}, "request": {samples}'.format(format=output_format, samples=json.dumps(samples)) + '}'
         output_str = ''
         try:
@@ -56,11 +57,12 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
         recieve += output_str[8:-1]
         match_result = json.loads(recieve.split('\n')[-1])
         all_match_result += match_result
-    return (all_match_result, output_file + '_' + trajectory_file)
+
+    return (all_match_result, output_file + '_new_' + tid)
 
 
 def post_process_trajectory(args):
-    result, output = args
+    (result, output) = args
     print('Here is in post_process:')
     with open(output, 'a') as f:
         f.write(json.dumps(result))
@@ -72,21 +74,27 @@ def get_trajectories(input_file):
     with open(input_file, 'r') as trajectories:
         for line in trajectories:
             trajectory = []
+
             if line.startswith('"TRIP_ID"'):
                 continue
+
             line_items = line.strip().split(',', 8)
+
             cleaner_items = [ele.strip('"') for ele in line_items]
-            tra_size = len(cleaner_items)
-            if tra_size < 60:
-                continue
+
             start_time = int(cleaner_items[5])
             tra_points = json.loads(cleaner_items[8])
+
+            tra_size = len(tra_points)
+            if tra_size < 60:
+                continue
+
             for idx, point in enumerate(tra_points):
                 point_time = idx * 15 + start_time
                 position = 'POINT(' + str(round(point[0], 5)) + ' ' + str(round(point[1], 5)) + ')'
                 point = {
                     "point": position,
-                    "time": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(point_time)) + '-0800',
+                    "time": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(point_time)) + '+0800',
                     "id": "1"
                 }
                 trajectory.append(point)
@@ -111,4 +119,4 @@ def main(input_file, output_file, threads):
 
 main(input_file='porto/dataset/test.csv',
      output_file='porto/trajectory/porto.trajectory',
-     threads=14, )
+     threads=7, )
