@@ -11,16 +11,19 @@ port = '1234'
 output_format = 'debug'
 
 
-def process_trajectory(tid, trajectory, host, port, output_format, output_file):
+def process_trajectory(tid, tra_points, host, port, output_format, output_file):
+
+    split_size = 100
+
     all_match_result = []
-    part_count = len(trajectory) // 200
+    part_count = len(tra_points) // split_size
     for index in range(part_count + 1):
-        start = index * 200
+        start = index * split_size
         if index == part_count:
-            end = len(trajectory)
+            end = len(tra_points)
         else:
-            end = (index + 1) * 200
-        samples = trajectory[start:end]
+            end = (index + 1) * split_size
+        samples = tra_points[start:end]
         # tmp = "batch-%s" % random.randint(0, sys.maxsize)
         # file = open(tmp, "w")
         post_str = '{' + '"format": {format}, "request": {samples}'.format(format=output_format, samples=json.dumps(samples)) + '}'
@@ -68,6 +71,7 @@ def get_trajectories(input_file):
 
     with open(input_file, 'r') as trajectories:
         for line in trajectories:
+            trajectory = []
             if line.startswith('"TRIP_ID"'):
                 continue
             line_items = line.strip().split(',', 8)
@@ -75,7 +79,18 @@ def get_trajectories(input_file):
             tra_size = len(cleaner_items)
             if tra_size < 60:
                 continue
-            yield (cleaner_items[0], json.loads(cleaner_items[8]))
+            start_time = int(cleaner_items[5])
+            tra_points = json.loads(cleaner_items[8])
+            for idx, point in enumerate(tra_points):
+                point_time = idx * 15 + start_time
+                position = 'POINT(' + str(round(point[0], 5)) + ' ' + str(round(point[1], 5)) + ')'
+                point = {
+                    "point": position,
+                    "time": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(point_time)) + '-0800',
+                    "id": "1"
+                }
+                trajectory.append(point)
+            yield (cleaner_items[0], trajectory)
 
 
 def main(input_file, output_file, threads):
@@ -86,8 +101,9 @@ def main(input_file, output_file, threads):
 
     for idx, trajectory in enumerate(trajectories):
         host_idx = idx % 7
+        (tid, tra_points) = trajectory
         pool.apply_async(func=process_trajectory,
-                         args=(trajectory[0], trajectory[1], host[host_idx], port, output_format, output_file),
+                         args=(tid, tra_points, host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
