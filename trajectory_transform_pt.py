@@ -11,7 +11,7 @@ port = '1234'
 output_format = 'debug'
 
 
-def process_trajectory(trajectory_file, trajectory, host, port, output_format, output_file):
+def process_trajectory(tid, trajectory, host, port, output_format, output_file):
     all_match_result = []
     part_count = len(trajectory) // 200
     for index in range(part_count + 1):
@@ -44,7 +44,6 @@ def process_trajectory(trajectory_file, trajectory, host, port, output_format, o
         except:
             print('connecting host error!')
 
-
         if not output.startswith('SUCCESS\n'):
             # sys.exit(1)
             print('Pay attention here!!! Here is a bad match action!@@@!!!!')
@@ -68,34 +67,15 @@ def post_process_trajectory(args):
 def get_trajectories(input_file):
 
     with open(input_file, 'r') as trajectories:
-        count = 0
-        mini_tra = 0
         for line in trajectories:
-            if count > 100:
-                break
             if line.startswith('"TRIP_ID"'):
                 continue
             line_items = line.strip().split(',', 8)
             cleaner_items = [ele.strip('"') for ele in line_items]
-            print(cleaner_items)
-            tra_size = len(cleaner_items[8])
-            if tra_size < 80:
-                print(tra_size)
-                mini_tra += 1
-            count += 1
-
-        print('mini_tra:', mini_tra)
-
-        # for row in new_data_matrix.itertuples():
-        #     position = 'POINT(' + str(round(getattr(row, 'longitude'), 5)) + ' ' + str(round(getattr(row, 'latitude'), 5)) + ')'
-        #     point = {
-        #         "point": position,
-        #         "time": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(getattr(row, 'time')))) + '+0800',
-        #         "id": "1"
-        #     }
-        #     trajectory.append(point)
-        #
-        # yield (trajectory_file, trajectory[::-1])
+            tra_size = len(cleaner_items)
+            if tra_size < 60:
+                continue
+            yield (cleaner_items[0], json.loads(cleaner_items[8]))
 
 
 def main(input_file, output_file, threads):
@@ -105,7 +85,6 @@ def main(input_file, output_file, threads):
     trajectories = get_trajectories(input_file)
 
     for idx, trajectory in enumerate(trajectories):
-        # host_idx = random.randint(0, len(host) - 1)
         host_idx = idx % 7
         pool.apply_async(func=process_trajectory,
                          args=(trajectory[0], trajectory[1], host[host_idx], port, output_format, output_file),
