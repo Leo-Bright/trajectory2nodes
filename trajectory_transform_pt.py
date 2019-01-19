@@ -23,9 +23,6 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
             end = (index + 1) * split_size
         samples = tra_points[start:end]
         # tmp = "batch-%s" % random.randint(0, sys.maxsize)
-        with open('porto/dataset/tmp.sample', "a") as f:
-            f.write(str(len(samples)) + '\n')
-            f.write(json.dumps(samples) + '\n')
 
         post_str = '{' + '"format": {format}, "request": {samples}'.format(format=output_format, samples=json.dumps(samples)) + '}'
         output_str = ''
@@ -86,7 +83,7 @@ def get_trajectories(input_file):
             tra_points = json.loads(cleaner_items[8])
 
             tra_size = len(tra_points)
-            if tra_size < 60:
+            if tra_size < 100:
                 continue
 
             for idx, point in enumerate(tra_points):
@@ -117,6 +114,6 @@ def main(input_file, output_file, threads):
     pool.join()
 
 
-main(input_file='porto/dataset/test.csv',
-     output_file='porto/trajectory/porto.trajectory',
-     threads=7, )
+main(input_file='porto/dataset/train.csv',
+     output_file='porto/trajectory/pt_tra',
+     threads=14, )
