@@ -6,7 +6,7 @@ import os
 def get_inputs(directory):
     all_files = os.listdir(directory)
     for file in all_files:
-        if file.find('.trajectory_new') >= 0:
+        if file.find('_new_') >= 0:
             with open(directory + file, 'r') as f:
                 yield json.loads(f.readline())
 
@@ -31,7 +31,7 @@ def trajectories2road_sequence(input_dir):
     input_trajectories = get_inputs(input_dir)
     for trajectory in input_trajectories:
         road_sequence = []
-        trajectory_size = len(trajectory)
+        # trajectory_size = len(trajectory)
         for index, matched in enumerate(trajectory):
             if 'transition' not in matched:
                 road = matched['point']
@@ -43,25 +43,16 @@ def trajectories2road_sequence(input_dir):
                 roads = matched['transition']['route']['roads']
                 if len(roads) > 1:
                     cur_time = matched['time']
-                    if index >= trajectory_size - 1:
-                        for road in roads[1:]:
-                            if not equal_the_last(road_sequence, road):
-                                road['time'] = cur_time
-                                road_sequence.append(road)
-                    else:
-                        next_matched = trajectory[index + 1]
-                        next_time = next_matched['time']
-                        time_seg = (next_time - cur_time) // (len(roads) - 1)
-                        for i, road in enumerate(roads[1:]):
-                            if not equal_the_last(road_sequence, road):
-                                new_time = time_seg * (i + 1) + cur_time
-                                road['time'] = new_time
-                                road_sequence.append(road)
+                    last_matched = trajectory[index - 1]
+                    last_time = last_matched['time']
+                    time_seg = (cur_time - last_time) // (len(roads) - 1)
+                    for i, road in enumerate(roads[1:]):
+                        if not equal_the_last(road_sequence, road):
+                            new_time = time_seg * (i + 1) + last_time
+                            road['time'] = new_time
+                            road_sequence.append(road)
                 else:
                     continue
-        for i in range(len(road_sequence) - 1):
-            if i == 0:
-                continue
 
         yield road_sequence
 
@@ -69,7 +60,7 @@ def trajectories2road_sequence(input_dir):
 def main(input_dir, output_road, output_node):
 
     road2node = {}
-    conn = psycopg2.connect(database="sanfrancisco", user="osmuser", password="pass", host="172.19.7.241", port="5432")
+    conn = psycopg2.connect(database="porto", user="osmuser", password="pass", host="172.19.7.241", port="5432")
     cur = conn.cursor()
     sql = 'select gid, source, target from bfmap_ways;'
     cur.execute(sql)
@@ -122,6 +113,6 @@ def main(input_dir, output_road, output_node):
     node_file.close()
 
 
-main(input_dir='sanfrancisco/trajectory/',
-     output_road='sanfrancisco/sequence/sf_trajectory_road_segment.sequence',
-     output_node='sanfrancisco/sequence/sf_trajectory_node.sequence')
+main(input_dir='porto/trajectory/',
+     output_road='porto/sequence/pt_trajectory_road_segment.sequence',
+     output_node='porto/sequence/pt_trajectory_node.sequence')
