@@ -47,6 +47,6 @@ def main(input_file, output_file, intervals):
     output.close()
 
 
-main(input_file='sanfrancisco/sequence/sf_trajectory_road_segment.sequence',
-     output_file='sanfrancisco/sequence/sf_travel_time_21.samples',
+main(input_file='porto/sequence/pt_trajectory_road_segment.sequence',
+     output_file='porto/sequence/pt_travel_time_21.samples',
      intervals=(21, ))
