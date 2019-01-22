@@ -135,10 +135,10 @@ def get_trajectories(input_dir, regex):
             request_trajectory = []
 
             for gps_point in traj:
-                position = 'POINT(' + str(gps_point[1]) + ' ' + str(gps_point[2]) + ')'
+                position = 'POINT(' + str(gps_point[2]) + ' ' + str(gps_point[3]) + ')'
                 request_point = {
                     "point": position,
-                    "time": gps_point[0] + '+0800',
+                    "time": gps_point[1] + '+0800',
                     "id": "1"
                 }
                 request_trajectory.append(request_point)
