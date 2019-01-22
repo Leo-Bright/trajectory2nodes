@@ -62,7 +62,7 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 def post_process_trajectory(args):
     (result, output) = args
     print('Here is in post_process: ', len(result))
-    with open(output, 'a') as f:
+    with open(output, 'w') as f:
         f.write(json.dumps(result))
     print('Post_process Done!')
 
@@ -196,7 +196,7 @@ def process_request(request_file):
             tid, request_points = line.strip().split(',', 1)
             request = json.loads(request_points)
             gps_size = len(request)
-            if gps_size < 15:
+            if gps_size < 10:
                 continue
             yield (tid, request)
 
