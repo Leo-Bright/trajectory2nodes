@@ -84,8 +84,6 @@ def get_trajectories(input_dir, regex):
 
         id2trajectory = {}
 
-        f = open(input_dir + trajectory_file + '_tmp', 'w+')
-
         with open(input_dir + trajectory_file, 'r') as input_data:
             for line in input_data:
 
@@ -123,14 +121,12 @@ def get_trajectories(input_dir, regex):
             if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
                 trajectories.append(trajectory)
 
-        for tra in trajectories:
-            print(tra[0][0], tra[0][4], time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]))
-            f.write(tra[0][0] + ' : ' + tra[0][3] + ' ： ' + str(time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1])))
-            f.write('\n')
-        f.close()
-        print(len(trajectories))
-
         for idx, traj in enumerate(trajectories):
+
+            trans_tool = traj[0][4]
+
+            if trans_tool == '99' or trans_tool == '3':
+                continue
 
             request_trajectory = []
 
