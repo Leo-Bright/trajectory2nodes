@@ -125,11 +125,16 @@ def get_trajectories(input_dir, regex):
             if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
                 trajectories.append(trajectory)
 
+        f1 = open('tokyo/request/transport_1.request', 'w+')
+        f2 = open('tokyo/request/transport_2.request', 'w+')
+        f3 = open('tokyo/request/transport_3.request', 'w+')
+        f4 = open('tokyo/request/transport_4.request', 'w+')
+
         for idx, traj in enumerate(trajectories):
 
             trans_tool = traj[0][4]
 
-            if trans_tool == '99' or trans_tool == '3':
+            if trans_tool == '99':
                 continue
 
             request_trajectory = []
@@ -142,7 +147,19 @@ def get_trajectories(input_dir, regex):
                     "id": "1"
                 }
                 request_trajectory.append(request_point)
-            yield (trajectory_file + '_' + str(idx), request_trajectory)
+
+            if trans_tool == '1':
+                f1.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
+            if trans_tool == '2':
+                f2.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
+            if trans_tool == '3':
+                f3.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
+            if trans_tool == '4':
+                f4.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
+        f1.close()
+        f2.close()
+        f3.close()
+        f4.close()
 
 
 def main(input_dir, regex, output_file, threads):
