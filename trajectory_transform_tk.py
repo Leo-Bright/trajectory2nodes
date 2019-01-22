@@ -89,6 +89,10 @@ def get_trajectories(input_dir, regex):
 
                 line_items = line.strip().split(',')
 
+                if len(line_items) != 6:
+                    print(line_items)
+                    continue
+
                 tra_id, tra_time, longitude, latitude, transport, weigh = line_items
 
                 if tra_id not in id2trajectory:
