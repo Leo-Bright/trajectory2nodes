@@ -61,7 +61,7 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 
 def post_process_trajectory(args):
     (result, output) = args
-    print('Here is in post_process:')
+    print('Here is in post_process: ', len(result))
     with open(output, 'a') as f:
         f.write(json.dumps(result))
     print('Post_process Done!')
@@ -84,6 +84,8 @@ def get_trajectories(input_dir, regex):
 
         id2trajectory = {}
 
+        f = open(input_dir + trajectory_file + '_tmp', 'w+')
+
         with open(input_dir + trajectory_file, 'r') as input_data:
             for line in input_data:
 
@@ -92,11 +94,12 @@ def get_trajectories(input_dir, regex):
                 tra_id, tra_time, longitude, latitude, transport, weigh = line_items
 
                 if tra_id not in id2trajectory:
-                    id2trajectory[tra_id] = [(tra_time, longitude, latitude, transport), ]
+                    id2trajectory[tra_id] = [(tra_id, tra_time, longitude, latitude, transport), ]
                 else:
-                    id2trajectory[tra_id].append((tra_time, longitude, latitude, transport))
+                    id2trajectory[tra_id].append((tra_id, tra_time, longitude, latitude, transport))
 
         trajectories = []
+
         for tra_id in id2trajectory:
 
             tra_points = id2trajectory[tra_id]
@@ -108,25 +111,29 @@ def get_trajectories(input_dir, regex):
                     trajectory.append(point)
                     continue
 
-                if point[3] == trajectory[-1][3]:
+                if point[4] == trajectory[-1][4]:
                     trajectory.append(point)
                     continue
 
-                if len(trajectory) <= 10:
-                    trajectory.clear()
-                    continue
-
-                if time_str2time_stamp(trajectory[-1][0]) - time_str2time_stamp(trajectory[0][0]) > 80:
+                if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
                     trajectories.append(trajectory)
+                    trajectory = []
+                    trajectory.append(point)
 
-                trajectory.clear()
-                trajectory.append(point)
-
-            if len(trajectory) > 10 and time_str2time_stamp(trajectory[-1][0]) - time_str2time_stamp(trajectory[0][0]) > 80:
+            if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
                 trajectories.append(trajectory)
 
+        for tra in trajectories:
+            print(tra[0][0], tra[0][4], time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]))
+            f.write(tra[0][0] + ' : ' + tra[0][3] + ' ： ' + str(time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1])))
+            f.write('\n')
+        f.close()
+        print(len(trajectories))
+
         for idx, traj in enumerate(trajectories):
+
             request_trajectory = []
+
             for gps_point in traj:
                 position = 'POINT(' + str(gps_point[1]) + ' ' + str(gps_point[2]) + ')'
                 request_point = {
@@ -135,7 +142,7 @@ def get_trajectories(input_dir, regex):
                     "id": "1"
                 }
                 request_trajectory.append(request_point)
-        yield (trajectory_file + '_' + str(idx), request_trajectory)
+            yield (trajectory_file + '_' + str(idx), request_trajectory)
 
 
 def main(input_dir, regex, output_file, threads):
