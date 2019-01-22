@@ -73,12 +73,17 @@ def time_str2time_stamp(str):
     return time_stamp
 
 
-def get_trajectories(input_dir, regex):
+def get_requests(input_dir, regex):
     trajectory_files = []
     file_names = os.listdir(input_dir)
     for file_name in file_names:
         if file_name.find(regex) >= 0:
             trajectory_files.append(file_name)
+
+    f1 = open('tokyo/request/transport_1.request', 'w+')
+    f2 = open('tokyo/request/transport_2.request', 'w+')
+    f3 = open('tokyo/request/transport_3.request', 'w+')
+    f4 = open('tokyo/request/transport_4.request', 'w+')
 
     for trajectory_file in trajectory_files:
 
@@ -125,11 +130,6 @@ def get_trajectories(input_dir, regex):
             if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
                 trajectories.append(trajectory)
 
-        f1 = open('tokyo/request/transport_1.request', 'w+')
-        f2 = open('tokyo/request/transport_2.request', 'w+')
-        f3 = open('tokyo/request/transport_3.request', 'w+')
-        f4 = open('tokyo/request/transport_4.request', 'w+')
-
         for idx, traj in enumerate(trajectories):
 
             trans_tool = traj[0][4]
@@ -156,22 +156,65 @@ def get_trajectories(input_dir, regex):
                 f3.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
             if trans_tool == '4':
                 f4.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
-        f1.close()
-        f2.close()
-        f3.close()
-        f4.close()
+    f1.close()
+    f2.close()
+    f3.close()
+    f4.close()
+
+
+def statistical(input_file):
+
+    count_20, count_50, count_100, count_200, count_400, count_400up = [0, 0, 0, 0, 0, 0]
+
+    file_size = 0
+    with open(input_file, 'r') as f:
+        for line in f:
+            file_size += 1
+            tid, request_points = line.strip().split(',', 1)
+            request = json.loads(request_points)
+            size = len(request)
+            if size < 15:
+                count_20 += 1
+            elif size < 50:
+                count_50 += 1
+            elif size < 120:
+                count_100 += 1
+            elif size < 200:
+                count_200 += 1
+            elif size < 400:
+                count_400 += 1
+            else:
+                count_400up += 1
+    print(file_size)
+    print([count_20, count_50, count_100, count_200, count_400, count_400up])
+
+
+def process_request(request_file):
+
+    with open(request_file, 'r') as f:
+        for line in f:
+            tid, request_points = line.strip().split(',', 1)
+            request = json.loads(request_points)
+            gps_size = len(request)
+            if gps_size < 15:
+                continue
+            yield (tid, request)
 
 
 def main(input_dir, regex, output_file, threads):
 
     pool = Pool(threads)
 
-    trajectories = get_trajectories(input_dir, regex)
+    # get_requests(input_dir, regex)
 
-    for idx, id_trajectory in enumerate(trajectories):
+    # statistical('tokyo/request/transport_2.request')
+
+    trajectories = process_request('tokyo/request/transport_2.request')
+
+    for idx, tid_trajectory in enumerate(trajectories):
         host_idx = idx % 7
         pool.apply_async(func=process_trajectory,
-                         args=(id_trajectory[0], id_trajectory[1], host[host_idx], port, output_format, output_file),
+                         args=('transport_2_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
