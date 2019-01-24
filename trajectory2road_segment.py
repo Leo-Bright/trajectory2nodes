@@ -92,7 +92,7 @@ def main(input_dir, output_road, output_node):
                 node_sequence.append(source)
             new_road_sequence.append(road)
 
-        if len(new_road_sequence) >= 10:
+        if len(new_road_sequence) > 0:
             road_file.write(json.dumps(new_road_sequence) + '\n')
         nodes_size = len(node_sequence)
 
@@ -107,7 +107,7 @@ def main(input_dir, output_road, output_node):
                 end = (index + 1) * patch_size
 
             node_patch = node_sequence[start:end]
-            if len(node_patch) > 10:
+            if len(node_patch) > 0:
                 node_file.write('%s\n' % ' 0 '.join(map(str, node_patch)))
 
     road_file.close()
