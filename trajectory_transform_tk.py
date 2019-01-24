@@ -62,6 +62,8 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 def post_process_trajectory(args):
     (result, output) = args
     print('Here is in post_process: ', len(result))
+    if len(result) < 1:
+        return
     with open(output, 'w') as f:
         f.write(json.dumps(result))
     print('Post_process Done!')
@@ -191,15 +193,9 @@ def statistical(input_file):
 
 def process_request(request_file):
 
-    start_flag = False
     with open(request_file, 'r') as f:
         for line in f:
             tid, request_points = line.strip().split(',', 1)
-            if tid.find('x05_97950') >= 0:
-                print('find specific str: ', line)
-                start_flag = True
-            if not start_flag:
-                continue
             request = json.loads(request_points)
             gps_size = len(request)
             if gps_size < 10:
