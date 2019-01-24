@@ -191,9 +191,15 @@ def statistical(input_file):
 
 def process_request(request_file):
 
+    start_flag = False
     with open(request_file, 'r') as f:
         for line in f:
             tid, request_points = line.strip().split(',', 1)
+            if tid.find('x05_97950') >= 0:
+                print('find specific str: ', line)
+                start_flag = True
+            if not start_flag:
+                continue
             request = json.loads(request_points)
             gps_size = len(request)
             if gps_size < 10:
@@ -209,12 +215,12 @@ def main(input_dir, regex, output_file, threads):
 
     # statistical('tokyo/request/transport_2.request')
 
-    trajectories = process_request('tokyo/request/transport_2.request')
+    trajectories = process_request('tokyo/request/transport_4.request')
 
     for idx, tid_trajectory in enumerate(trajectories):
         host_idx = idx % 7
         pool.apply_async(func=process_trajectory,
-                         args=('transport_2_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
+                         args=('transport_4_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
