@@ -107,7 +107,7 @@ def main(input_dir, output_road, output_node):
                 end = (index + 1) * patch_size
 
             node_patch = node_sequence[start:end]
-            if node_patch > 10:
+            if len(node_patch) > 10:
                 node_file.write('%s\n' % ' 0 '.join(map(str, node_patch)))
 
     road_file.close()
