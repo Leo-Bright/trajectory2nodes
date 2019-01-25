@@ -53,6 +53,7 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 
         recieve = ''
         recieve += output_str[8:-1]
+        print(recieve)
         match_result = json.loads(recieve.split('\n')[-1])
         all_match_result += match_result
 
