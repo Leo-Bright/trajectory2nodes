@@ -198,7 +198,8 @@ def process_request(request_file):
             tid, request_points = line.strip().split(',', 1)
             if tid == 'x00_83':
                 print('there is x00_83')
-                return (tid, json.loads(request_points))
+                yield (tid, json.loads(request_points))
+                return
             request = json.loads(request_points)
             gps_size = len(request)
             if gps_size < 10:
