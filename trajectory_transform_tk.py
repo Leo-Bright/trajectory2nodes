@@ -13,7 +13,7 @@ output_format = 'debug'
 def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 
     split_size = 200
-
+    print(tid)
     all_match_result = []
     part_count = len(tra_points) // split_size
     for index in range(part_count + 1):
@@ -218,6 +218,7 @@ def main(input_dir, regex, output_file, threads):
 
     for idx, tid_trajectory in enumerate(trajectories):
         host_idx = idx % 7
+        print('host_idx: ', host_idx)
         pool.apply_async(func=process_trajectory,
                          args=('transport_4_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
