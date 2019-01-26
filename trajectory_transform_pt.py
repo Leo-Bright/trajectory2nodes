@@ -60,8 +60,10 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 
 def post_process_trajectory(args):
     (result, output) = args
-    print('Here is in post_process:')
-    with open(output, 'a') as f:
+    print('Here is in post_process:', len(result))
+    if len(result) < 1:
+        return
+    with open(output, 'w') as f:
         f.write(json.dumps(result))
     print('Post_process Done!')
 
