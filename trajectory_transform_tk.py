@@ -125,12 +125,14 @@ def get_requests(input_dir, regex):
                     trajectory.append(point)
                     continue
 
-                if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
+                # if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
+                if len(trajectory) >= 10:
                     trajectories.append(trajectory)
                     trajectory = []
                     trajectory.append(point)
 
-            if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
+            # if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
+            if len(trajectory) >= 10:
                 trajectories.append(trajectory)
 
         for idx, traj in enumerate(trajectories):
@@ -210,22 +212,22 @@ def process_request(request_file):
 
 def main(input_dir, regex, output_file, threads):
 
-    pool = Pool(threads)
+    # pool = Pool(threads)
 
-    # get_requests(input_dir, regex)
+    get_requests(input_dir, regex)
 
     # statistical('tokyo/request/transport_2.request')
 
-    trajectories = process_request('tokyo/request/transport_4.request')
-
-    for idx, tid_trajectory in enumerate(trajectories):
-        host_idx = idx % 7
-        print('host_idx: ', host_idx)
-        pool.apply_async(func=process_trajectory,
-                         args=('transport_4_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
-                         callback=post_process_trajectory)
-    pool.close()
-    pool.join()
+    # trajectories = process_request('tokyo/request/transport_4.request')
+    #
+    # for idx, tid_trajectory in enumerate(trajectories):
+    #     host_idx = idx % 7
+    #     print('host_idx: ', host_idx)
+    #     pool.apply_async(func=process_trajectory,
+    #                      args=('transport_4_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
+    #                      callback=post_process_trajectory)
+    # pool.close()
+    # pool.join()
 
 
 # print(time_str2time_stamp('2016-12-16 03:00:00'))
