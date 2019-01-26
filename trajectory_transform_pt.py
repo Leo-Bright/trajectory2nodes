@@ -68,6 +68,8 @@ def post_process_trajectory(args):
 
 def get_trajectories(input_file):
 
+    request_file = open('porto/request/train.request', 'w+')
+
     with open(input_file, 'r') as trajectories:
         for line in trajectories:
             trajectory = []
@@ -83,7 +85,7 @@ def get_trajectories(input_file):
             tra_points = json.loads(cleaner_items[8])
 
             tra_size = len(tra_points)
-            if tra_size < 100:
+            if tra_size < 10:
                 continue
 
             for idx, point in enumerate(tra_points):
@@ -95,6 +97,7 @@ def get_trajectories(input_file):
                     "id": "1"
                 }
                 trajectory.append(point)
+            request_file.write(cleaner_items[0] + ', ' + json.dumps(trajectory) + '\n')
             yield (cleaner_items[0], trajectory)
 
 
