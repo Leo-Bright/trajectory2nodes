@@ -36,17 +36,31 @@ def main(input_file, output_file, intervals):
         for line in f:
             road_sequence = json.loads(line)
             size = len(road_sequence)
-            for inter in intervals:
-                inter_size = size // inter
-                for i in range(inter_size):
-                    split_road_sequence = road_sequence[i * inter:-1] if i == inter_size - 1 else road_sequence[i * inter:(i + 1) * inter]
-                    node_sequence = get_nodes_from_roads(split_road_sequence)
-                    travel_time = split_road_sequence[-1]['time'] - split_road_sequence[0]['time']
-                    # print('start_road:', start_road, '\t end_node:', end_road)
+            start = 0
+            flag = False
+            for i in range(size):
+                travel_time = road_sequence[i]['time'] - road_sequence[start]['time']
+                if travel_time > intervals:
+                    if flag:
+                        node_sequence = get_nodes_from_roads(last_road_sequence)
+                        output.write('%s\n' % ' '.join(map(str, node_sequence + [last_travel_time])))
+                    last_road_sequence = road_sequence[start:i + 1]
+                    last_travel_time = travel_time
+                    start = i + 1
+                    flag = True
+                # print('start_road:', start_road, '\t end_node:', end_road)
+                elif i == size - 1:
+                    if not flag:
+                        continue
+                    last_road_sequence += road_sequence[start:]
+                    node_sequence = get_nodes_from_roads(last_road_sequence)
                     output.write('%s\n' % ' '.join(map(str, node_sequence + [travel_time])))
+                else:
+                    continue
+
     output.close()
 
 
-main(input_file='porto/sequence/pt_trajectory_road_segment.sequence',
-     output_file='porto/sequence/pt_travel_time_21.samples',
-     intervals=(21, ))
+main(input_file='tokyo/sequence/tk_trajectory_transport_2_road_segment.sequence',
+     output_file='tokyo/sequence/tk_transport_2_travel_time_45.samples',
+     intervals=45)
