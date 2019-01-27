@@ -13,7 +13,6 @@ output_format = 'debug'
 def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 
     split_size = 200
-    print(tid)
     all_match_result = []
     part_count = len(tra_points) // split_size
     for index in range(part_count + 1):
@@ -53,7 +52,6 @@ def process_trajectory(tid, tra_points, host, port, output_format, output_file):
 
         recieve = ''
         recieve += output_str[8:-1]
-        print(recieve)
         match_result = json.loads(recieve.split('\n')[-1])
         all_match_result += match_result
 
@@ -199,10 +197,6 @@ def process_request(request_file):
     with open(request_file, 'r') as f:
         for line in f:
             tid, request_points = line.strip().split(',', 1)
-            if tid == 'x00_83':
-                print('there is x00_83')
-                yield (tid, json.loads(request_points))
-                return
             request = json.loads(request_points)
             gps_size = len(request)
             if gps_size < 10:

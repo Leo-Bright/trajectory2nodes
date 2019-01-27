@@ -36,6 +36,7 @@ def main(input_file, output_file, intervals):
         for line in f:
             road_sequence = json.loads(line)
             if not intervals:
+                travel_time = road_sequence[-1]['time'] - road_sequence[0]['time']
                 node_sequence = get_nodes_from_roads(last_road_sequence)
                 output.write('%s\n' % ' '.join(map(str, node_sequence + [travel_time])))
             else:
@@ -66,5 +67,5 @@ def main(input_file, output_file, intervals):
 
 
 main(input_file='porto/sequence/pt_trajectory_road_segment.sequence',
-     output_file='porto/sequence/pt_trajectory_node.sequence',
+     output_file='porto/sequence/pt_trajectory_travel_time.samples',
      intervals=None)
