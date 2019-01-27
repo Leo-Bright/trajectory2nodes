@@ -115,5 +115,5 @@ def main(input_dir, output_road, output_node):
 
 
 main(input_dir='porto/trajectory/',
-     output_road='porto/sequence/tk_trajectory_road_segment.sequence',
-     output_node='porto/sequence/tk_trajectory_node.sequence')
+     output_road='porto/sequence/pt_trajectory_road_segment.sequence',
+     output_node='porto/sequence/pt_trajectory_node.sequence')
