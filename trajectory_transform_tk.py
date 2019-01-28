@@ -86,7 +86,12 @@ def get_requests(input_dir, regex):
     f3 = open('tokyo/request/transport_3.request', 'w+')
     f4 = open('tokyo/request/transport_4.request', 'w+')
 
-    count_point = 0
+    count_point_1 = 0
+    count_point_2 = 0
+    count_point_3 = 0
+    count_point_4 = 0
+    count_point_99 = 0
+    count_point_lt5 = 0
 
     for trajectory_file in trajectory_files:
 
@@ -130,22 +135,22 @@ def get_requests(input_dir, regex):
                     trajectory = []
                     trajectory.append(point)
                 else:
+                    count_point_lt5 += len(trajectory)
                     trajectory = []
                     trajectory.append(point)
-                    count_point += len(trajectory)
 
             if len(trajectory) >= 5:
                 trajectories.append(trajectory)
             else:
-                count_point += len(trajectory)
-
-        print('count_point: ', count_point)
+                count_point_lt5 += len(trajectory)
 
         for idx, traj in enumerate(trajectories):
 
             trans_tool = traj[0][4]
+            tra_size = len(traj)
 
             if trans_tool == '99':
+                count_point_99 += tra_size
                 continue
 
             request_trajectory = []
@@ -160,17 +165,27 @@ def get_requests(input_dir, regex):
                 request_trajectory.append(request_point)
 
             if trans_tool == '1':
+                count_point_1 += tra_size
                 f1.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
             if trans_tool == '2':
+                count_point_2 += tra_size
                 f2.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
             if trans_tool == '3':
+                count_point_3 += tra_size
                 f3.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
             if trans_tool == '4':
+                count_point_4 += tra_size
                 f4.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
     f1.close()
     f2.close()
     f3.close()
     f4.close()
+    print('99:', count_point_99)
+    print('1:', count_point_1)
+    print('2:', count_point_2)
+    print('3:', count_point_3)
+    print('4:', count_point_4)
+    print('lt5:', count_point_lt5)
 
 
 def statistical(input_file):
