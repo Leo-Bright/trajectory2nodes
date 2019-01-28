@@ -60,7 +60,7 @@ def trajectories2road_sequence(input_dir):
 def main(input_dir, output_road, output_node):
 
     road2node = {}
-    conn = psycopg2.connect(database="tokyo", user="osmuser", password="pass", host="172.19.7.241", port="5432")
+    conn = psycopg2.connect(database="porto", user="osmuser", password="pass", host="172.19.7.241", port="5432")
     cur = conn.cursor()
     sql = 'select gid, source, target from bfmap_ways;'
     cur.execute(sql)
@@ -114,6 +114,6 @@ def main(input_dir, output_road, output_node):
     node_file.close()
 
 
-main(input_dir='tokyo/trajectory/',
-     output_road='tokyo/sequence/tk_trajectory_road_segment.sequence',
-     output_node='tokyo/sequence/tk_trajectory_node.sequence')
+main(input_dir='porto/trajectory/',
+     output_road='porto/sequence/pt_trajectory_road_segment.sequence',
+     output_node='porto/sequence/pt_trajectory_node.sequence')
