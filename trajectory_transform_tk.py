@@ -229,21 +229,21 @@ def process_request(request_file):
 
 def main(input_dir, regex, output_file, threads):
 
-    # pool = Pool(threads)
+    pool = Pool(threads)
 
-    get_requests(input_dir, regex)
+    # get_requests(input_dir, regex)
 
     # statistical('tokyo/request/transport_2.request')
 
-    # trajectories = process_request('tokyo/request/transport_4.request')
+    trajectories = process_request('tokyo/request/transport_2.request')
 
-    # for idx, tid_trajectory in enumerate(trajectories):
-    #     host_idx = idx % 8
-    #     pool.apply_async(func=process_trajectory,
-    #                      args=('transport_4_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
-    #                      callback=post_process_trajectory)
-    # pool.close()
-    # pool.join()
+    for idx, tid_trajectory in enumerate(trajectories):
+        host_idx = idx % 8
+        pool.apply_async(func=process_trajectory,
+                         args=('transport_2_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
+                         callback=post_process_trajectory)
+    pool.close()
+    pool.join()
 
 
 main(input_dir='tokyo/dataset/',
