@@ -198,7 +198,7 @@ def process_request(request_file):
         flag = False
         for line in f:
             tid, request_points = line.strip().split(',', 1)
-            if tid == 'x07_990':
+            if tid == 'x07_79666':
                 flag = True
             if not flag:
                 continue
