@@ -38,9 +38,9 @@ def main(road_segment_file, road_segment_file2):
             # time_total_num += road_segments[-1]['time'] - road_segments[0]['time']
 
     print('trajectory_total_num: ', trajectory_total_num)
-    print('segs_total_num: ', point_total_num)
+    print('point_total_num: ', point_total_num)
     print('time_total_num: ', time_total_num)
-    print('average trajectory segs: ', point_total_num/trajectory_total_num)
+    print('average trajectory point: ', point_total_num/trajectory_total_num)
     print('average segment times: ', time_total_num/point_total_num)
 
 
