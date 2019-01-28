@@ -86,6 +86,8 @@ def get_requests(input_dir, regex):
     f3 = open('tokyo/request/transport_3.request', 'w+')
     f4 = open('tokyo/request/transport_4.request', 'w+')
 
+    count_point = 0
+
     for trajectory_file in trajectory_files:
 
         id2trajectory = {}
@@ -127,9 +129,15 @@ def get_requests(input_dir, regex):
                     trajectories.append(trajectory)
                     trajectory = []
                     trajectory.append(point)
+                else:
+                    count_point += len(trajectory)
 
             if len(trajectory) >= 5:
                 trajectories.append(trajectory)
+            else:
+                count_point += len(trajectory)
+
+        print('count_point: ', count_point)
 
         for idx, traj in enumerate(trajectories):
 
