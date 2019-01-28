@@ -130,6 +130,8 @@ def get_requests(input_dir, regex):
                     trajectory = []
                     trajectory.append(point)
                 else:
+                    trajectory = []
+                    trajectory.append(point)
                     count_point += len(trajectory)
 
             if len(trajectory) >= 5:
