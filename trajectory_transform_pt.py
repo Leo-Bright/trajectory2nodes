@@ -73,8 +73,6 @@ def get_trajectories(input_file):
 
     # request_file = open('porto/request/train.request', 'w+')
 
-    delete_file = []
-
     with open(input_file, 'r') as trajectories:
         for line in trajectories:
             trajectory = []
@@ -90,9 +88,10 @@ def get_trajectories(input_file):
             tra_points = json.loads(cleaner_items[8])
 
             tra_size = len(tra_points)
-            if 10 <= tra_size < 30:
-                delete_file.append(cleaner_items[0])
-                os.remove('porto/trajectory/pt_tra_new_' + cleaner_items[0])
+            if tra_size < 30:
+                file_name = 'porto/trajectory/pt_tra_new_' + cleaner_items[0]
+                if os.path.exists(file_name):
+                    os.remove('porto/trajectory/pt_tra_new_' + cleaner_items[0])
 
 
 
