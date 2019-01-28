@@ -8,7 +8,7 @@ def time_str2time_stamp(s):
     return time_stamp
 
 
-def main(road_segment_file, road_segment_file2):
+def main(road_segment_file, road_segment_file2, file3, file4):
 
     trajectory_total_num = 0
     point_total_num = 0
@@ -25,8 +25,32 @@ def main(road_segment_file, road_segment_file2):
             time_total_num += time_str2time_stamp(tra_points[-1]['time'].split('+')[0]) - time_str2time_stamp(tra_points[0]['time'].split('+')[0])
             # time_total_num += road_segments[-1]['time'] - road_segments[0]['time']
 
-    with open(road_segment_file2, 'r') as f1:
-        for line in f1:
+    with open(road_segment_file2, 'r') as f2:
+        for line in f2:
+            if line.startswith('"TRIP_ID"'):
+                continue
+            items = line.strip().split(',', 1)
+            tra_points = json.loads(items[1])
+            points_size = len(tra_points)
+            point_total_num += points_size
+            trajectory_total_num += 1
+            time_total_num += time_str2time_stamp(tra_points[-1]['time'].split('+')[0]) - time_str2time_stamp(tra_points[0]['time'].split('+')[0])
+            # time_total_num += road_segments[-1]['time'] - road_segments[0]['time']
+
+    with open(file3, 'r') as f3:
+        for line in f3:
+            if line.startswith('"TRIP_ID"'):
+                continue
+            items = line.strip().split(',', 1)
+            tra_points = json.loads(items[1])
+            points_size = len(tra_points)
+            point_total_num += points_size
+            trajectory_total_num += 1
+            time_total_num += time_str2time_stamp(tra_points[-1]['time'].split('+')[0]) - time_str2time_stamp(tra_points[0]['time'].split('+')[0])
+            # time_total_num += road_segments[-1]['time'] - road_segments[0]['time']
+
+    with open(file4, 'r') as f4:
+        for line in f4:
             if line.startswith('"TRIP_ID"'):
                 continue
             items = line.strip().split(',', 1)
@@ -46,4 +70,4 @@ def main(road_segment_file, road_segment_file2):
 
 if __name__ == '__main__':
 
-    main('tokyo/request/transport_2.request', 'tokyo/request/transport_4.request', )
+    main('tokyo/request/transport_2.request', 'tokyo/request/transport_4.request', 'tokyo/request/transport_1.request', 'tokyo/request/transport_3.request',)
