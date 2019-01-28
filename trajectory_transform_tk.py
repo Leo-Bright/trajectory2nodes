@@ -68,8 +68,8 @@ def post_process_trajectory(args):
     print('Post_process Done!')
 
 
-def time_str2time_stamp(str):
-    time_array = time.strptime(str, "%Y-%m-%d %H:%M:%S")
+def time_str2time_stamp(s):
+    time_array = time.strptime(s, "%Y-%m-%d %H:%M:%S")
     time_stamp = int(time.mktime(time_array))
     return time_stamp
 
@@ -123,13 +123,11 @@ def get_requests(input_dir, regex):
                     trajectory.append(point)
                     continue
 
-                # if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
                 if len(trajectory) >= 5:
                     trajectories.append(trajectory)
                     trajectory = []
                     trajectory.append(point)
 
-            # if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
             if len(trajectory) >= 5:
                 trajectories.append(trajectory)
 
@@ -216,7 +214,6 @@ def main(input_dir, regex, output_file, threads):
 
     for idx, tid_trajectory in enumerate(trajectories):
         host_idx = idx % 8
-        # print('host_idx: ', host_idx)
         pool.apply_async(func=process_trajectory,
                          args=('transport_4_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
@@ -224,7 +221,6 @@ def main(input_dir, regex, output_file, threads):
     pool.join()
 
 
-# print(time_str2time_stamp('2016-12-16 03:00:00'))
 main(input_dir='tokyo/dataset/',
      regex='x0',
      output_file='tokyo/trajectory/tk_tra',
