@@ -124,13 +124,13 @@ def get_requests(input_dir, regex):
                     continue
 
                 # if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
-                if len(trajectory) >= 10:
+                if len(trajectory) >= 5:
                     trajectories.append(trajectory)
                     trajectory = []
                     trajectory.append(point)
 
             # if time_str2time_stamp(trajectory[-1][1]) - time_str2time_stamp(trajectory[0][1]) > 300:
-            if len(trajectory) >= 10:
+            if len(trajectory) >= 5:
                 trajectories.append(trajectory)
 
         for idx, traj in enumerate(trajectories):
@@ -199,7 +199,7 @@ def process_request(request_file):
             tid, request_points = line.strip().split(',', 1)
             request = json.loads(request_points)
             gps_size = len(request)
-            if gps_size < 10:
+            if gps_size < 5:
                 continue
             yield (tid, request)
 
