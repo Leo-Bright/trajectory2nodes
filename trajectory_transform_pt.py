@@ -4,7 +4,7 @@ import socket
 from multiprocessing import Pool
 
 
-host = ['172.19.7.235', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
+host = ['172.19.7.235', '172.19.7.236', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
 port = '1234'
 output_format = 'debug'
 
@@ -87,7 +87,7 @@ def get_trajectories(input_file):
             tra_points = json.loads(cleaner_items[8])
 
             tra_size = len(tra_points)
-            if tra_size < 10:
+            if tra_size < 30:
                 continue
 
             for idx, point in enumerate(tra_points):
@@ -110,7 +110,7 @@ def main(input_file, output_file, threads):
     trajectories = get_trajectories(input_file)
 
     for idx, trajectory in enumerate(trajectories):
-        host_idx = idx % 7
+        host_idx = idx % 8
         (tid, tra_points) = trajectory
         pool.apply_async(func=process_trajectory,
                          args=(tid, tra_points, host[host_idx], port, output_format, output_file),
@@ -121,4 +121,4 @@ def main(input_file, output_file, threads):
 
 main(input_file='porto/dataset/train.csv',
      output_file='porto/trajectory/pt_tra',
-     threads=14, )
+     threads=16, )

@@ -6,7 +6,7 @@ import socket
 from multiprocessing import Pool
 
 
-host = ['172.19.7.235', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
+host = ['172.19.7.235', '172.19.7.236', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
 port = '1234'
 output_format = 'debug'
 
@@ -107,7 +107,7 @@ def main(input_dir, regex, output_file, threads):
 
     for idx, trajectory in enumerate(trajectories):
         # host_idx = random.randint(0, len(host) - 1)
-        host_idx = idx % 7
+        host_idx = idx % 8
         pool.apply_async(func=process_trajectory,
                          args=(trajectory[0], trajectory[1], host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
@@ -118,4 +118,4 @@ def main(input_dir, regex, output_file, threads):
 main(input_dir='sanfrancisco/dataset/',
      regex='.txt',
      output_file='sanfrancisco/trajectory/sanfrancisco.trajectory',
-     threads=14, )
+     threads=16, )

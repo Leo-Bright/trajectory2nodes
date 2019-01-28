@@ -5,7 +5,7 @@ import os
 from multiprocessing import Pool
 
 
-host = ['172.19.7.235', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
+host = ['172.19.7.235', '172.19.7.236', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
 port = '1234'
 output_format = 'debug'
 
@@ -195,8 +195,13 @@ def statistical(input_file):
 def process_request(request_file):
 
     with open(request_file, 'r') as f:
+        flag = False
         for line in f:
             tid, request_points = line.strip().split(',', 1)
+            if tid == 'x07_990':
+                flag = True
+            if not flag:
+                continue
             request = json.loads(request_points)
             gps_size = len(request)
             if gps_size < 10:
@@ -215,7 +220,7 @@ def main(input_dir, regex, output_file, threads):
     trajectories = process_request('tokyo/request/transport_2.request')
 
     for idx, tid_trajectory in enumerate(trajectories):
-        host_idx = idx % 7
+        host_idx = idx % 8
         # print('host_idx: ', host_idx)
         pool.apply_async(func=process_trajectory,
                          args=('transport_2_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
@@ -228,4 +233,4 @@ def main(input_dir, regex, output_file, threads):
 main(input_dir='tokyo/dataset/',
      regex='x0',
      output_file='tokyo/trajectory/tk_tra',
-     threads=14, )
+     threads=16, )
