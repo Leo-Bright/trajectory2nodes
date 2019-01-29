@@ -8,7 +8,7 @@ def time_str2time_stamp(s):
     return time_stamp
 
 
-def main(road_segment_file, road_segment_file2, file3, file4):
+def main(road_segment_file, road_segment_file2):
 
     trajectory_total_num = 0
     point_total_num = 0
