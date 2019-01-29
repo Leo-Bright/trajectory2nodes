@@ -28,6 +28,7 @@ def main(road_segment_file):
                 trajectory_total_num += 1
                 time_total_num += time_str2time_stamp(tra_points[-1]['time'].split('+')[0]) - time_str2time_stamp(tra_points[0]['time'].split('+')[0])
 
+
     # with open(road_segment_file2, 'r') as f2:
     #     for line in f2:
     #         if line.startswith('"TRIP_ID"'):

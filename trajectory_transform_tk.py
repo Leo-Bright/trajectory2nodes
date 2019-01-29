@@ -86,6 +86,8 @@ def get_requests(input_dir, regex):
     f3 = open('tokyo/request/transport_3.request', 'w+')
     f4 = open('tokyo/request/transport_4.request', 'w+')
 
+    trajectory_total = 0
+    travel_time_total = 0
     count_point_1 = 0
     count_point_2 = 0
     count_point_3 = 0
@@ -147,6 +149,7 @@ def get_requests(input_dir, regex):
         for idx, traj in enumerate(trajectories):
 
             trans_tool = traj[0][4]
+            tra_travel_time = time_str2time_stamp(traj[-1][1]) - time_str2time_stamp(traj[0][1])
             tra_size = len(traj)
 
             if trans_tool == '99':
@@ -169,11 +172,15 @@ def get_requests(input_dir, regex):
                 f1.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
             if trans_tool == '2':
                 count_point_2 += tra_size
+                trajectory_total += 1
+                travel_time_total += tra_travel_time
                 f2.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
             if trans_tool == '3':
                 count_point_3 += tra_size
                 f3.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
             if trans_tool == '4':
+                trajectory_total += 1
+                travel_time_total += tra_travel_time
                 count_point_4 += tra_size
                 f4.write(trajectory_file + '_' + str(idx) + ', ' + json.dumps(request_trajectory) + '\n')
     f1.close()
@@ -186,6 +193,8 @@ def get_requests(input_dir, regex):
     print('3:', count_point_3)
     print('4:', count_point_4)
     print('lt5:', count_point_lt5)
+    print('time_2_4: ', travel_time_total)
+    print('traj_2_4: ', trajectory_total)
 
 
 def statistical(input_file):
@@ -229,21 +238,21 @@ def process_request(request_file):
 
 def main(input_dir, regex, output_file, threads):
 
-    pool = Pool(threads)
+    # pool = Pool(threads)
 
-    # get_requests(input_dir, regex)
+    get_requests(input_dir, regex)
 
     # statistical('tokyo/request/transport_2.request')
 
-    trajectories = process_request('tokyo/request/transport_2.request')
+    # trajectories = process_request('tokyo/request/transport_2.request')
 
-    for idx, tid_trajectory in enumerate(trajectories):
-        host_idx = idx % 8
-        pool.apply_async(func=process_trajectory,
-                         args=('transport_2_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
-                         callback=post_process_trajectory)
-    pool.close()
-    pool.join()
+    # for idx, tid_trajectory in enumerate(trajectories):
+    #     host_idx = idx % 8
+    #     pool.apply_async(func=process_trajectory,
+    #                      args=('transport_2_' + tid_trajectory[0], tid_trajectory[1], host[host_idx], port, output_format, output_file),
+    #                      callback=post_process_trajectory)
+    # pool.close()
+    # pool.join()
 
 
 main(input_dir='tokyo/dataset/',
