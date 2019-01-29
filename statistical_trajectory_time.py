@@ -20,7 +20,8 @@ def main(road_segment_file):
                 continue
             items = line.strip().split(',', 1)
             tid = items[0]
-            if os.path.exists('okyo/trajectory/tk_tra_new_transport_2_' + tid):
+            if os.path.exists('tokyo/trajectory/tk_tra_new_transport_2_' + tid):
+                print('tokyo/trajectory/tk_tra_new_transport_2_' + tid + 'exists!')
                 tra_points = json.loads(items[1])
                 points_size = len(tra_points)
                 point_total_num += points_size
