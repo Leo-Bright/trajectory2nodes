@@ -68,7 +68,8 @@ def main(input_file, output_road_segment, output_travel_time, intervals):
                     else:
                         continue
 
-    output_road.close()
+    if output_road:
+        output_road.close()
     output_node.close()
 
 
