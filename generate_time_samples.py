@@ -30,7 +30,8 @@ def get_nodes_from_roads(road_sequence):
 
 def main(input_file, output_road_segment, output_travel_time, intervals):
 
-    output_road = open(output_road_segment, 'w+')
+    if intervals:
+        output_road = open(output_road_segment, 'w+')
     output_node = open(output_travel_time, 'w+')
 
     with open(input_file, 'r') as f:
@@ -72,6 +73,6 @@ def main(input_file, output_road_segment, output_travel_time, intervals):
 
 
 main(input_file='porto/sequence/pt_trajectory_road_segment.sequence',
-     output_road_segment='porto/sequence/pt_trajectory_road_segment_split450.sequence',
-     output_travel_time='porto/sequence/pt_trajectory_node_travel_time_450.travel',
-     intervals=450)
+     output_road_segment='porto/sequence/pt_trajectory_road_segment.sequence',
+     output_travel_time='porto/sequence/pt_trajectory_node_travel_time.travel',
+     intervals=None)
