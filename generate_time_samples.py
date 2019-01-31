@@ -40,7 +40,6 @@ def main(input_file, output_road_segment, output_travel_time, intervals):
                 travel_time = road_sequence[-1]['time'] - road_sequence[0]['time']
                 node_sequence = get_nodes_from_roads(road_sequence)
                 output_node.write('%s\n' % ' '.join(map(str, node_sequence + [travel_time])))
-                output_road.write(json.dumps(last_road_sequence) + '\n')
             else:
                 size = len(road_sequence)
                 start = 0
