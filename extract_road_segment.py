@@ -3,17 +3,22 @@ from gensim.models import Word2Vec
 import json
 
 # 数据库连接参数
-conn = psycopg2.connect(database="porto", user="osmuser", password="pass", host="172.19.7.241", port="5432")
+conn = psycopg2.connect(database="tokyo", user="osmuser", password="pass", host="localhost", port="5432")
 cur = conn.cursor()
 
-cur.execute("select gid, osm_id, source, target, reverse, priority from bfmap_ways;")
+cur.execute("select gid, osm_id, class_id, source, target, reverse, priority from bfmap_ways;")
 rows = cur.fetchall()        # all rows in table
 
 way2nodes = {}  # {osmid_way: [osmid_node,...]}
 road_segments = []
+node_type2node_id = {}
 nodes_count = {}
 for row in rows:
-    gid, osm_id, source, target, reverse, priority = row
+    gid, osm_id, class_id, source, target, reverse, priority = row
+    if class_id not in node_type2node_id:
+        node_type2node_id[class_id] = {}
+    node_type2node_id[class_id][source] = True
+    node_type2node_id[class_id][target] = True
     if source not in nodes_count:
         nodes_count[source] = 1
     else:
@@ -22,32 +27,34 @@ for row in rows:
         nodes_count[target] = 1
     else:
         nodes_count[target] += 1
-    road_segments.append((gid, osm_id, source, target, reverse, priority))
+    road_segments.append((gid, osm_id, class_id, source, target, reverse, priority))
 conn.commit()
 cur.close()
 conn.close()
 print(len(nodes_count.keys()))
 
-with open(r'porto_road_segment.json', 'w+') as network:
-    network.write(json.dumps(road_segments))
+with open(r'node_types.tokyo', 'w+') as node_type:
+    for key in node_type2node_id:
+        for node in node_type2node_id[key]:
+            node_type.write(str(node) + ' ' + str(key) + '\n')
 
-with open(r'porto_road_segment.network', 'w+') as network:
+with open(r'tokyo_road_segment.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
-        gid, osm_id, source, target, reverse, priority = road_segment
+        gid, osm_id, class_id, source, target, reverse, priority = road_segment
         if float(reverse) >= 0.0:
-            network.write(str(gid) + " " + str(osm_id) + " " + str(source) + " " + str(target) + " " + str(priority))
+            network.write(str(gid) + " " + str(osm_id) + " " + str(class_id) + " " + str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
-            network.write(str(gid) + " " + str(osm_id) + " " + str(target) + " " + str(source) + " " + str(priority))
+            network.write(str(gid) + " " + str(osm_id) + " " + str(class_id) + " " + str(target) + " " + str(source) + " " + str(priority))
             network.write("\n")
         else:
-            network.write(str(gid) + " " + str(osm_id) + " " + str(source) + " " + str(target) + " " + str(priority))
+            network.write(str(gid) + " " + str(osm_id) + " " + str(class_id) + " " + str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
 
-with open(r'porto_LINE.network', 'w+') as network:
+with open(r'tokyo_LINE.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
-        gid, osm_id, source, target, reverse, priority = road_segment
+        gid, osm_id, class_id, source, target, reverse, priority = road_segment
         if float(reverse) >= 0.0:
             network.write(str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
@@ -57,10 +64,10 @@ with open(r'porto_LINE.network', 'w+') as network:
             network.write(str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
 
-with open(r'porto.network', 'w+') as network:
+with open(r'tokyo.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\n")
     for road_segment in road_segments:
-        gid, osm_id, source, target, reverse, priority = road_segment
+        gid, osm_id, class_id, source, target, reverse, priority = road_segment
         network.write(str(source) + " " + str(target))
         network.write("\n")
 
