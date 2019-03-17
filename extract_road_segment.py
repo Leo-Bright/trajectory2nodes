@@ -71,6 +71,18 @@ with open(r'tokyo.network', 'w+') as network:
         network.write(str(source) + " " + str(target))
         network.write("\n")
 
+nodes2segment = {}
+for road_segment in road_segments:
+    gid, osm_id, class_id, source, target, reverse, priority = road_segment
+    if source not in nodes2segment:
+        nodes2segment[source] = {}
+    nodes2segment[source][target] = gid
+
+with open(r'tokyo_nodes2segment.json', 'w+') as nodes2segment_file:
+    nodes2segment_file.write(json.dumps(nodes2segment))
+
+
+
 # walks = []
 # f_500K_ways = open(r'500k.w2v.txt', 'r')
 # f_500K_node2vec = open(r'500k.nodes.vector', 'w+')
