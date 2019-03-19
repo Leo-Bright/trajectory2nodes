@@ -3,7 +3,7 @@ from gensim.models import Word2Vec
 import json
 
 # 数据库连接参数
-conn = psycopg2.connect(database="tokyo", user="osmuser", password="pass", host="localhost", port="5432")
+conn = psycopg2.connect(database="porto", user="osmuser", password="pass", host="localhost", port="5432")
 cur = conn.cursor()
 
 cur.execute("select gid, osm_id, class_id, source, target, reverse, priority from bfmap_ways;")
@@ -33,12 +33,12 @@ cur.close()
 conn.close()
 print(len(nodes_count.keys()))
 
-with open(r'node_types.tokyo', 'w+') as node_type:
+with open(r'node_types.porto', 'w+') as node_type:
     for key in node_type2node_id:
         for node in node_type2node_id[key]:
             node_type.write(str(node) + ' ' + str(key) + '\n')
 
-with open(r'tokyo_road_segment.network', 'w+') as network:
+with open(r'porto_road_segment.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
@@ -51,7 +51,7 @@ with open(r'tokyo_road_segment.network', 'w+') as network:
             network.write(str(gid) + " " + str(osm_id) + " " + str(class_id) + " " + str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
 
-with open(r'tokyo_LINE.network', 'w+') as network:
+with open(r'porto_LINE.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
@@ -64,7 +64,7 @@ with open(r'tokyo_LINE.network', 'w+') as network:
             network.write(str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
 
-with open(r'tokyo.network', 'w+') as network:
+with open(r'porto.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
@@ -77,8 +77,11 @@ for road_segment in road_segments:
     if source not in nodes2segment:
         nodes2segment[source] = {}
     nodes2segment[source][target] = gid
+    if target not in nodes2segment:
+        nodes2segment[target] = {}
+    nodes2segment[target][source] = gid
 
-with open(r'tokyo_nodes2segment.json', 'w+') as nodes2segment_file:
+with open(r'porto_nodes2segment.json', 'w+') as nodes2segment_file:
     nodes2segment_file.write(json.dumps(nodes2segment))
 
 
