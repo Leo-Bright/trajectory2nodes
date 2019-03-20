@@ -12,6 +12,7 @@ rows = cur.fetchall()        # all rows in table
 way2nodes = {}  # {osmid_way: [osmid_node,...]}
 road_segments = []
 node_type2node_id = {}
+segment_type2segment_id = {}
 nodes_count = {}
 for row in rows:
     gid, osm_id, class_id, source, target, reverse, priority = row
@@ -19,6 +20,9 @@ for row in rows:
         node_type2node_id[class_id] = {}
     node_type2node_id[class_id][source] = True
     node_type2node_id[class_id][target] = True
+    if class_id not in segment_type2segment_id:
+        segment_type2segment_id[class_id] = []
+    segment_type2segment_id[class_id].append(gid)
     if source not in nodes_count:
         nodes_count[source] = 1
     else:
@@ -37,6 +41,11 @@ with open(r'node_types.porto', 'w+') as node_type:
     for key in node_type2node_id:
         for node in node_type2node_id[key]:
             node_type.write(str(node) + ' ' + str(key) + '\n')
+
+with open(r'segment_types.porto', 'w+') as segment_type:
+    for key in segment_type2segment_id:
+        for segment in segment_type2segment_id[key]:
+            segment_type.write(str(segment) + ' ' + str(key) + '\n')
 
 with open(r'porto_road_segment.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
