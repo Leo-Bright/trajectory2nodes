@@ -8,7 +8,7 @@ cur = conn.cursor()
 
 cur.execute("select gid, osm_id, class_id, source, target, reverse, priority from bfmap_ways;")
 rows = cur.fetchall()        # all rows in table
-
+print("segments count:", len(rows))
 way2nodes = {}  # {osmid_way: [osmid_node,...]}
 road_segments = []
 node_type2node_id = {}
