@@ -11,6 +11,7 @@ rows = cur.fetchall()        # all rows in table
 print("segments count:", len(rows))
 way2nodes = {}  # {osmid_way: [osmid_node,...]}
 road_segments = []
+all_road_segment_dict = {}
 node_type2node_id = {}
 segment_type2segment_id = {}
 nodes_count = {}
@@ -32,10 +33,14 @@ for row in rows:
     else:
         nodes_count[target] += 1
     road_segments.append((gid, osm_id, class_id, source, target, reverse, priority))
+    all_road_segment_dict[gid] = {"osm_id": osm_id, "source": source, "target": target, "reverse": reverse, "class_id": class_id}
 conn.commit()
 cur.close()
 conn.close()
 print(len(nodes_count.keys()))
+
+with open(r'all_road_segments_dict.porto', 'w+') as f:
+    f.write(json.dumps(all_road_segment_dict))
 
 with open(r'node_types.porto', 'w+') as node_type:
     for key in node_type2node_id:
