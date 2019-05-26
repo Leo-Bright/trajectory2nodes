@@ -4,7 +4,7 @@ import socket
 from multiprocessing import Pool
 
 host = ['172.19.7.241',]
-port = '1234'
+port = '5432'
 output_format = 'debug'
 
 
@@ -95,14 +95,16 @@ def main(input_file, output_file, threads):
 
     trajectories = get_trajectories(input_file)
 
-    # for idx, trajectory in enumerate(trajectories):
-    #     host_idx = 0
-    #     (tid, tra_points) = trajectory
-    #     pool.apply_async(func=process_trajectory,
-    #                      args=(tid, tra_points, host[host_idx], port, output_format, output_file),
-    #                      callback=post_process_trajectory)
-    # pool.close()
-    # pool.join()
+    for idx, trajectory in enumerate(trajectories):
+        if idx == 20000:
+            break;
+        host_idx = 0
+        (tid, tra_points) = trajectory
+        pool.apply_async(func=process_trajectory,
+                         args=(tid, tra_points, host[host_idx], port, output_format, output_file),
+                         callback=post_process_trajectory)
+    pool.close()
+    pool.join()
 
 
 main(input_file='porto/dataset/train.csv',
