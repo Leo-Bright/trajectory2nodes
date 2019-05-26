@@ -102,14 +102,14 @@ def main(input_file, output_file, threads):
             trajectory = json.loads(trajectory_json)
             if line_num == 10000:
                 break
-        tra_points = trajectory
-        pool.apply_async(func=process_trajectory,
-                         args=(tid, tra_points, host[0], port, output_format, output_file),
-                         callback=post_process_trajectory)
+            tra_points = trajectory
+            pool.apply_async(func=process_trajectory,
+                             args=(tid, tra_points, host[0], port, output_format, output_file),
+                             callback=post_process_trajectory)
     pool.close()
     pool.join()
 
 
 main(input_file='porto/request/train_50_70.request',
-     output_file='porto/trajectory/pt_tra',
+     output_file='porto/trajectory/filter_50_70/1w/',
      threads=2, )
