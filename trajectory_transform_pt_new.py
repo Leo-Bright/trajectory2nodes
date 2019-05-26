@@ -4,7 +4,7 @@ import socket
 from multiprocessing import Pool
 
 host = ['172.19.7.241',]
-port = '5432'
+port = '1234'
 output_format = 'debug'
 
 
