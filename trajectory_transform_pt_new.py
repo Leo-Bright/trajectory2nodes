@@ -56,7 +56,7 @@ def post_process_trajectory(args):
 
 def get_trajectories(input_file):
 
-    request_file = open('porto/request/train.request', 'w+')
+    request_file = open('porto/request/train_50_70.request', 'w+')
 
     with open(input_file, 'r') as trajectories:
         for line in trajectories:
@@ -73,7 +73,7 @@ def get_trajectories(input_file):
             tra_points = json.loads(cleaner_items[8])
 
             tra_size = len(tra_points)
-            if tra_size < 30:
+            if tra_size < 50 or tra_size > 70:
                 continue
 
             for idx, point in enumerate(tra_points):
@@ -95,14 +95,14 @@ def main(input_file, output_file, threads):
 
     trajectories = get_trajectories(input_file)
 
-    for idx, trajectory in enumerate(trajectories):
-        host_idx = 0
-        (tid, tra_points) = trajectory
-        pool.apply_async(func=process_trajectory,
-                         args=(tid, tra_points, host[host_idx], port, output_format, output_file),
-                         callback=post_process_trajectory)
-    pool.close()
-    pool.join()
+    # for idx, trajectory in enumerate(trajectories):
+    #     host_idx = 0
+    #     (tid, tra_points) = trajectory
+    #     pool.apply_async(func=process_trajectory,
+    #                      args=(tid, tra_points, host[host_idx], port, output_format, output_file),
+    #                      callback=post_process_trajectory)
+    # pool.close()
+    # pool.join()
 
 
 main(input_file='porto/dataset/train.csv',
