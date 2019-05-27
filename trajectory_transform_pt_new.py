@@ -93,20 +93,23 @@ def main(input_file, output_file, threads):
 
     pool = Pool(threads)
 
-    trajectories = get_trajectories(input_file)
+    # trajectories = get_trajectories(input_file)
 
-    for idx, trajectory in enumerate(trajectories):
-        if idx == 20000:
-            break;
-        host_idx = 0
-        (tid, tra_points) = trajectory
-        pool.apply_async(func=process_trajectory,
-                         args=(tid, tra_points, host[host_idx], port, output_format, output_file),
-                         callback=post_process_trajectory)
+    line_num = 0
+    with open(input_file) as f:
+        for line in f:
+            tid, trajectory_json = line.strip().split(',', 1)
+            trajectory = json.loads(trajectory_json)
+            if line_num == 10000:
+                break
+            tra_points = trajectory
+            pool.apply_async(func=process_trajectory,
+                             args=(tid, tra_points, host[0], port, output_format, output_file),
+                             callback=post_process_trajectory)
     pool.close()
     pool.join()
 
 
-main(input_file='porto/dataset/train.csv',
-     output_file='porto/trajectory/pt_tra',
+main(input_file='porto/request/train_50_70.request',
+     output_file='porto/trajectory/filter_50_70/1w/',
      threads=2, )
