@@ -4,15 +4,17 @@ min_length = 999
 min_id = 0
 
 with open('porto/sequence/pt_trajectory_node_travel_time_50_70_1w.travel') as f:
-    for idx, line in f:
+    num = 0
+    for line in f:
         nodes_time = line.strip().split(' ')
         size = len(nodes_time)
         if size > max_length:
             max_length = size
-            max_id = idx
+            max_id = num
         if size < min_length:
             min_length = size
-            min_id = idx
+            min_id = num
+        num += 1
 
 print("max_length: ", max_length)
 print("max_id: ", max_id)
