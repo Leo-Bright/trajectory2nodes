@@ -37,6 +37,8 @@ def main(input_file, output_road_segment, output_travel_time, intervals):
     with open(input_file, 'r') as f:
         for line in f:
             road_sequence = json.loads(line)
+            if len(road_sequence) < 15:
+                continue
             if not intervals:
                 travel_time = road_sequence[-1]['time'] - road_sequence[0]['time']
                 node_sequence = get_nodes_from_roads(road_sequence)
