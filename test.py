@@ -1,12 +1,10 @@
-import json
+max_length = 0
 
+with open('porto/sequence/pt_trajectory_node_travel_time_50_70_1w.travel') as f:
+    for line in f:
+        nodes_time = line.strip().split(' ')
+        size = len(nodes_time)
+        if size > max_length:
+            max_length = size
 
-with open('porto/dataset/porto_nodes2segment.json', ) as nodes2seg_file:
-    nodes2seg = nodes2seg_file.readline()
-nodes2seg_json = json.loads(nodes2seg)
-
-count = 0
-for key in nodes2seg_json:
-    for s_key in nodes2seg_json[key]:
-        count += 1
-print(count)
+print("max_length: ", max_length)
