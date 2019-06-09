@@ -19,6 +19,7 @@ def get_gps_point_trajectories(input_dir, regex):
 
     total_point = 0
     total_time = 0
+    total_tra = 0
     print('file number:', len(gps_point_trajectories))
     for gps_point_trajectory in gps_point_trajectories:
         data_matrix = pd.read_csv(input_dir + gps_point_trajectory, header=None, sep=' ', index_col=None)
@@ -35,12 +36,36 @@ def get_gps_point_trajectories(input_dir, regex):
 
         trajectory = []
 
-        time_first = time_gps.iloc[0]
-        time_last = time_gps.iloc[-1]
-        time_gap = time_first - time_last
-        total_time += time_gap
-        total_point += time_gps.size
+        # time_first = time_gps.iloc[0]
+        # time_last = time_gps.iloc[-1]
+        # time_gap = time_first - time_last
+        # total_time += time_gap
+        # total_point += time_gps.size
 
+        occupy_trajectories = []
+        _occupy = []
+        in_occupy = False
+        for row in new_data_matrix.itertuples():
+            _occupancy = getattr(row, 'occupancy')
+            _time = getattr(row, 'time')
+            if _occupancy == 1:
+                _occupy.append(_time)
+                if not in_occupy:
+                    in_occupy = True
+            else:
+                if in_occupy:
+                    _occupy_ = _occupy.copy()
+                    occupy_trajectories.append(_occupy_)
+                    _occupy = []
+                else:
+                    continue
+        for _tra in occupy_trajectories:
+            if len(_tra) < 3 : continue
+            total_point += len(_tra)
+            total_time += _tra[0] - _tra[-1]
+            total_tra += 1
+
+    print('total_tra: ', total_tra)
     print('total_point: ', total_point)
     print('total_time: ', total_time)
     print('average_time_per_point: ', total_time/total_point)
