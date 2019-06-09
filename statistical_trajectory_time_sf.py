@@ -19,6 +19,7 @@ def get_gps_point_trajectories(input_dir, regex):
 
     total_point = 0
     total_time = 0
+    print('file number:', len(gps_point_trajectories))
     for gps_point_trajectory in gps_point_trajectories:
         data_matrix = pd.read_csv(input_dir + gps_point_trajectory, header=None, sep=' ', index_col=None)
         latitude = data_matrix[0]
@@ -34,10 +35,11 @@ def get_gps_point_trajectories(input_dir, regex):
 
         trajectory = []
 
-        time_values = time_gps.values()
-        time_gap = time_values[-1] - time_values[0]
+        time_first = time_gps.iloc[0]
+        time_last = time_gps.iloc[-1]
+        time_gap = time_first - time_last
         total_time += time_gap
-        total_point += len(time_values)
+        total_point += time_gps.size
 
     print('total_point: ', total_point)
     print('total_time: ', total_time)
