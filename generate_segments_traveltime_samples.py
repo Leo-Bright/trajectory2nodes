@@ -25,7 +25,7 @@ def get_segments_from_roads(sequence):
     return _segments
 
 
-def main(input_file, output_travel_time):
+def main(input_file, output_travel_time, intervals):
 
     output_node = open(output_travel_time, 'w+')
 
@@ -34,12 +34,38 @@ def main(input_file, output_travel_time):
             segments_sequence = json.loads(line)
             if len(segments_sequence) < 15:
                 continue
-            travel_time = segments_sequence[-1]['time'] - segments_sequence[0]['time']
-            node_sequence = get_segments_from_roads(segments_sequence)
-            output_node.write('%s\n' % ' '.join(map(str, node_sequence + [travel_time])))
+            if not intervals:
+                travel_time = segments_sequence[-1]['time'] - segments_sequence[0]['time']
+                segments = get_segments_from_roads(segments_sequence)
+                output_node.write('%s\n' % ' '.join(map(str, segments + [travel_time])))
+            else:
+                size = len(segments_sequence)
+                start = 0
+                have_last = False
+                for i in range(size):
+                    travel_time = segments_sequence[i]['time'] - segments_sequence[start]['time']
+                    if travel_time > intervals:
+                        if have_last:
+                            segments = get_segments_from_roads(last_road_sequence)
+                            output_node.write('%s\n' % ' '.join(map(str, segments + [last_travel_time])))
+                        last_road_sequence = segments_sequence[start:i + 1]
+                        last_travel_time = travel_time
+                        start = i + 1
+                        have_last = True
+                    # print('start_road:', start_road, '\t end_node:', end_road)
+                    elif i == size - 1:
+                        if not have_last:
+                            cur_road_sequence = segments_sequence[start:]
+                        else:
+                            cur_road_sequence = last_road_sequence
+                        segments = get_segments_from_roads(cur_road_sequence)
+                        output_node.write('%s\n' % ' '.join(map(str, segments + [travel_time])))
+                    else:
+                        continue
 
     output_node.close()
 
 
 main(input_file='porto/sequence/pt_trajectory_road_segment.sequence',
-     output_travel_time='porto/sequence/pt_trajectory_node_travel_time.travel')
+     output_travel_time='porto/sequence/pt_trajectory_node_travel_time.travel',
+     intervals=None)
