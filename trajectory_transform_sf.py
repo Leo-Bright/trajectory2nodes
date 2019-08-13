@@ -53,7 +53,7 @@ def post_process_trajectory(args):
     all_result, output = args
     print('Here is in post_process:', output)
     with open(output, 'a') as f:
-        for idx, result in all_result:
+        for idx, result in enumerate(all_result):
             f.write(json.dumps(result) + '\n')
     print('Post_process Done!')
 
