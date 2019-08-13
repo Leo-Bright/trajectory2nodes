@@ -35,14 +35,18 @@ def trans_node_to_segment(nodes, node2segment):
     last_node = None
     for node in nodes:
         if last_node is not None:
-            _segment = node2segment[last_node]
-            segment = _segment[node]
-            segments.append(segment)
+            try:
+                _segment = node2segment[last_node]
+                segment = _segment[node]
+                segments.append(segment)
+            except:
+                print(node, last_node)
+                exit()
         last_node = node
     return segments
 
 
 if __name__ == '__main__':
     main(input_walk='tokyo/sequence/tk_trajectory_transport_all_node_travel_time_450.travel',
-         node2segment_dict='../tokyo/network/sanfrancisco_nodes2segment.json',
+         node2segment_dict='../NetworkWalker/tokyo/network/tokyo_nodes2segment.json',
          output_walk='tokyo/sequence/tk_trajectory_transport_all_segment_travel_time_450.travel')
