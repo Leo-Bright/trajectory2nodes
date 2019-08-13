@@ -14,7 +14,7 @@ output_format = 'debug'
 def process_trajectory(trajectory_file, trajectory, host, port, output_format, output_file):
     all_match_result = []
     split_trajs = split_with_time(trajectory, 45)
-    for idx, traj in split_trajs:
+    for traj in split_trajs:
         samples = traj
         post_str = '{' + '"format": {format}, "request": {samples}'.format(format=output_format, samples=json.dumps(samples)) + '}'
         output_str = ''
