@@ -6,23 +6,16 @@ import socket
 from multiprocessing import Pool
 
 
-host = ['172.19.7.235', '172.19.7.236', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
+host = ['172.19.7.235', '172.19.7.237', '172.19.7.238', '172.19.7.239', '172.19.7.240', '172.19.7.241', '172.19.7.242']
 port = '1234'
 output_format = 'debug'
 
 
 def process_trajectory(trajectory_file, trajectory, host, port, output_format, output_file):
     all_match_result = []
-    part_count = len(trajectory) // 200
-    for index in range(part_count + 1):
-        start = index * 200
-        if index == part_count:
-            end = len(trajectory)
-        else:
-            end = (index + 1) * 200
-        samples = trajectory[start:end]
-        # tmp = "batch-%s" % random.randint(0, sys.maxsize)
-        # file = open(tmp, "w")
+    split_trajs = split_with_time(trajectory, 45)
+    for traj in split_trajs:
+        samples = traj
         post_str = '{' + '"format": {format}, "request": {samples}'.format(format=output_format, samples=json.dumps(samples)) + '}'
         output_str = ''
         try:
@@ -43,7 +36,6 @@ def process_trajectory(trajectory_file, trajectory, host, port, output_format, o
                 s.close()
         except:
             print('connecting host error!')
-
 
         if not output.startswith('SUCCESS\n'):
             # sys.exit(1)
@@ -99,6 +91,26 @@ def get_trajectories(input_dir, regex):
         yield (trajectory_file, trajectory[::-1])
 
 
+
+
+def split_with_time(origin, seg):
+    split_trajs = []
+    traj = []
+    traj.append(origin[0])
+    for id in range(1, len(origin)):
+        cur_point = origin[id]
+        last_point = origin[id-1]
+        cur_point_time = time.mktime(time.strptime(cur_point['time'][:-5], '%Y-%m-%d %H:%M:%S'))
+        last_point_time = time.mktime(time.strptime(last_point['time'][:-5], '%Y-%m-%d %H:%M:%S'))
+        if cur_point_time - last_point_time <seg:
+            traj.append(cur_point)
+        else:
+            split_trajs.append(traj)
+            traj = []
+            traj.append(cur_point)
+    return split_trajs
+
+
 def main(input_dir, regex, output_file, threads):
 
     pool = Pool(threads)
@@ -107,9 +119,11 @@ def main(input_dir, regex, output_file, threads):
 
     for idx, trajectory in enumerate(trajectories):
         # host_idx = random.randint(0, len(host) - 1)
-        host_idx = idx % 8
+        trajectory_file = trajectory[0]
+        trajs = trajectory[1]
+        host_idx = idx % 7
         pool.apply_async(func=process_trajectory,
-                         args=(trajectory[0], trajectory[1], host[host_idx], port, output_format, output_file),
+                         args=(trajectory_file, trajs, host[host_idx], port, output_format, output_file),
                          callback=post_process_trajectory)
     pool.close()
     pool.join()
@@ -118,4 +132,4 @@ def main(input_dir, regex, output_file, threads):
 main(input_dir='sanfrancisco/dataset/',
      regex='.txt',
      output_file='sanfrancisco/trajectory/sanfrancisco.trajectory',
-     threads=16, )
+     threads=14, )
