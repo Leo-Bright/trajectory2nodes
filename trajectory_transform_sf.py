@@ -12,6 +12,7 @@ output_format = 'debug'
 
 
 def process_trajectory(trajectory_file, trajectory, host, port, output_format, output_file):
+    all_match_result = []
     split_trajs = split_with_time(trajectory, 45)
     for idx, traj in split_trajs:
         samples = traj
@@ -44,14 +45,16 @@ def process_trajectory(trajectory_file, trajectory, host, port, output_format, o
         recieve = ''
         recieve += output_str[8:-1]
         match_result = json.loads(recieve.split('\n')[-1])
-        yield (match_result, output_file + '_' + idx + '_' + trajectory_file)
+        all_match_result.append(match_result)
+    return (all_match_result, output_file + '_' + trajectory_file)
 
 
 def post_process_trajectory(args):
-    result, output = args
-    print('Here is in post_process:', output_format)
+    all_result, output = args
+    print('Here is in post_process:', output)
     with open(output, 'a') as f:
-        f.write(json.dumps(result))
+        for idx, result in all_result:
+            f.write(json.dumps(result) + '\n')
     print('Post_process Done!')
 
 
