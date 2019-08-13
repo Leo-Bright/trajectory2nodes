@@ -49,7 +49,7 @@ def process_trajectory(trajectory_file, trajectory, host, port, output_format, o
 
 def post_process_trajectory(args):
     result, output = args
-    print('Here is in post_process:')
+    print('Here is in post_process:', output_format)
     with open(output, 'a') as f:
         f.write(json.dumps(result))
     print('Post_process Done!')
