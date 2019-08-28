@@ -22,7 +22,7 @@ def extract_segment_key(road_segments_file, way_tag_file, key, output_file):
 
 
 if __name__ == '__main__':
-    extract_segment_key(road_segments_file='sanfrancisco/dataset/all_road_segments_dict.sanfrancisco',
-                           way_tag_file='sanfrancisco/dataset/sf_road_highway_tag.json',
+    extract_segment_key(road_segments_file='chicago/dataset/all_road_segments_dict.chicago',
+                           way_tag_file='chicago/dataset/chicago_road_segment_tag.json',
                            key='tiger:name_base',
-                           output_file='sanfrancisco/dataset/sf_segments_tiger_namebase_type.json')
+                           output_file='chicago/dataset/chicago_segments_tiger_namebase_type.json')
