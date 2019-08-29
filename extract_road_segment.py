@@ -2,7 +2,7 @@ import psycopg2
 import json
 
 # 数据库连接参数
-conn = psycopg2.connect(database="chicago", user="osmuser", password="pass", host="localhost", port="5432")
+conn = psycopg2.connect(database="seattle", user="osmuser", password="pass", host="localhost", port="5432")
 cur = conn.cursor()
 
 cur.execute("select gid, osm_id, class_id, source, target, reverse, priority from bfmap_ways;")
@@ -38,20 +38,20 @@ cur.close()
 conn.close()
 print(len(nodes_count.keys()))
 
-with open(r'all_road_segments_dict.chicago', 'w+') as f:
+with open(r'all_road_segments_dict.seattle', 'w+') as f:
     f.write(json.dumps(all_road_segment_dict))
 
-with open(r'node_types.chicago', 'w+') as node_type:
+with open(r'node_types.seattle', 'w+') as node_type:
     for key in node_type2node_id:
         for node in node_type2node_id[key]:
             node_type.write(str(node) + ' ' + str(key) + '\n')
 
-with open(r'segments_type.chicago', 'w+') as segment_type:
+with open(r'segments_type.seattle', 'w+') as segment_type:
     for key in segment_type2segment_id:
         for segment in segment_type2segment_id[key]:
             segment_type.write(str(segment) + ' ' + str(key) + '\n')
 
-with open(r'chicago_road_segment.network', 'w+') as network:
+with open(r'seattle_road_segment.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
@@ -64,7 +64,7 @@ with open(r'chicago_road_segment.network', 'w+') as network:
             network.write(str(gid) + " " + str(osm_id) + " " + str(class_id) + " " + str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
 
-with open(r'chicago_LINE.network', 'w+') as network:
+with open(r'seattle_LINE.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
@@ -77,7 +77,7 @@ with open(r'chicago_LINE.network', 'w+') as network:
             network.write(str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
 
-with open(r'chicago.network', 'w+') as network:
+with open(r'seattle.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
@@ -94,7 +94,7 @@ for road_segment in road_segments:
         nodes2segment[target] = {}
     nodes2segment[target][source] = gid
 
-with open(r'chicago_nodes2segment.json', 'w+') as nodes2segment_file:
+with open(r'seattle_nodes2segment.json', 'w+') as nodes2segment_file:
     nodes2segment_file.write(json.dumps(nodes2segment))
 
 
