@@ -12,7 +12,7 @@ def main(input_sequence, output_mixture):
                 if _mixture[pointer - 1] != word:
                     mixture.append(word)
                 pointer += 1
-            num = len(mixture)/100
+            num = len(mixture)//100
             for i in range(100):
                 start = num * i
                 end = num * (i + 1)
