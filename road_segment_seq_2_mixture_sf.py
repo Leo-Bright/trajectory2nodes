@@ -11,6 +11,7 @@ def main(input_sequence, output_mixture):
             for word in _mixture[1:]:
                 if _mixture[pointer - 1] != word:
                     mixture.append(word)
+                    print("=======" + word + "======")
                 pointer += 1
             f.write('%s\n' % ' 0 '.join(map(str, mixture)))
 
