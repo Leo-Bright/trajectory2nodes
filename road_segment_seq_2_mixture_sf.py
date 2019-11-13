@@ -12,7 +12,12 @@ def main(input_sequence, output_mixture):
                 if _mixture[pointer - 1] != word:
                     mixture.append(word)
                 pointer += 1
-            f.write('%s\n' % ' 0 '.join(map(str, mixture)))
+            num = len(mixture)/100
+            for i in range(100):
+                start = num * i
+                end = num * (i + 1)
+                seq = mixture[start:end]
+                f.write('%s\n' % ' 0 '.join(map(str, seq)))
 
 
 def get_mixtures(input_seq):
