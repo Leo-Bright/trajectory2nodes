@@ -1,44 +1,43 @@
 import json
 
 
-def main(input_sequence, output_mixture):
+def main(input_sequence, output):
 
-    with open(output_mixture, 'w+') as f:
-        for _mixture in get_mixtures(input_sequence):
-            mixture = []
-            mixture.append(_mixture[0])
+    with open(output, 'w+') as f:
+        for _node_seq in get_node_seqs(input_sequence):
+            node_seq = []
+            node_seq.append(_node_seq[0])
             pointer = 1
-            for word in _mixture[1:]:
-                if _mixture[pointer - 1] != word:
-                    mixture.append(word)
+            for node in _node_seq[1:]:
+                if _node_seq[pointer - 1] != node:
+                    node_seq.append(node)
                 pointer += 1
-            num = len(mixture)//100
+            num = len(node_seq)//100
             for i in range(100):
                 start = num * i
                 end = num * (i + 1)
-                seq = mixture[start:end]
+                seq = node_seq[start:end]
                 f.write('%s\n' % ' 0 '.join(map(str, seq)))
 
 
-def get_mixtures(input_seq):
+def get_node_seqs(input_seq):
     with open(input_seq) as input_seq_file:
         for seq_line in input_seq_file:
             road_segment_seq = json.loads(seq_line)
             if len(road_segment_seq) < 10:
                 continue
             else:
-                _mixture = segments2mixture(road_segment_seq)
-                yield _mixture
+                _node_seq = segments2node_seq(road_segment_seq)
+                yield _node_seq
 
 
-def segments2mixture(road_segment_seq):
-    words = []
+def segments2node_seq(road_segment_seq):
+    nodes = []
     is_head = True
     for road_segment in road_segment_seq:
         if is_head:
-            words.append(road_segment["road"])
             node = road_segment["target"] if road_segment["heading"] == "forward" else road_segment["source"]
-            words.append(node)
+            nodes.append(node)
             is_head = False
         else:
             if road_segment["heading"] == "forward":
@@ -47,13 +46,12 @@ def segments2mixture(road_segment_seq):
             else:
                 _source = road_segment["target"]
                 _target = road_segment["source"]
-            words.append(_source)
-            words.append(road_segment["road"])
-            words.append(_target)
-    return words
+            nodes.append(_source)
+            nodes.append(_target)
+    return nodes
 
 
 if __name__ == '__main__':
 
     main(input_sequence='sanfrancisco/sequence/sf_trajectory_road_segment.sequence',
-         output_mixture='sanfrancisco/sequence/sf_trajectory_sequence.mixture')
+         output='sanfrancisco/sequence/sf_trajectory_sequence.node')
