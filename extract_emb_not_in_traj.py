@@ -1,14 +1,19 @@
-def main(shortest_emb, trajectory_emb, output_emb):
+def main(shortest_emb, trajectory_emb,output_node, output_emb):
 
-    _ex_nodes = get_node_set(trajectory_emb)
+    _shortest_nodes = get_node_set(trajectory_emb)
+    _extra_nodes = set()
 
-    print("nodes in shortest and not in traj:", _ex_nodes)
     with open(output_emb, 'w+') as output:
         with open(shortest_emb, ) as emb_file:
             for line in emb_file:
                 node = line.strip().split(' ')[0]
-                if node not in _ex_nodes:
+                if node not in _shortest_nodes:
+                    _extra_nodes.add(node)
                     output.write(line + "\n")
+
+    with open(output_node, 'w+') as output_node:
+        for node in _extra_nodes:
+            output_node.write(node + '\n')
 
 
 def get_node_set(trajectory_emb):
@@ -23,7 +28,7 @@ def get_node_set(trajectory_emb):
 
 if __name__ == '__main__':
 
-    main(shortest_emb='../my_model_distance_window/porto/sequence/sf_trajectory_road_segment.sequence',
-         trajectory_emb='porto/sequence/sf_trajectory_sequence.node',
-         output_node='',
-         output_emb='')
+    main(shortest_emb='../my_model_distance_window/sanfrancisco/sf_trajectory_increament_tag_type_window_width500_crossing_node_38g.embedding',
+         trajectory_emb='../my_model_distance_window/sanfrancisco/sf_trajectory_increament_tag_type_window_width500_crossing_node.embedding',
+         output_node='sanfrancisco/sequence/sf_not_in_trajectory.node',
+         output_emb='../my_model_distance_window/sanfrancisco/sf_not_in_trajectory_window_width500_crossing_node.embedding')
