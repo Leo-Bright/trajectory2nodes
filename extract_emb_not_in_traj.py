@@ -1,60 +1,29 @@
-import json
+def main(shortest_emb, trajectory_emb, output_emb):
+
+    _ex_nodes = get_node_set(trajectory_emb)
+
+    print("nodes in shortest and not in traj:", _ex_nodes)
+    with open(output_emb, 'w+') as output:
+        with open(shortest_emb, ) as emb_file:
+            for line in emb_file:
+                node = line.strip().split(' ')[0]
+                if node not in _ex_nodes:
+                    output.write(line + "\n")
 
 
-def main(shortest_path, trajectory, shortest_emb):
+def get_node_set(trajectory_emb):
 
-    with open(output, 'w+') as f:
-        for _node_seq in get_node_seqs(input_sequence):
-            node_seq = []
-            node_seq.append(_node_seq[0])
-            pointer = 1
-            for node in _node_seq[1:]:
-                if _node_seq[pointer - 1] != node:
-                    node_seq.append(node)
-                pointer += 1
-            num = len(node_seq)//100
-            for i in range(100):
-                start = num * i
-                end = num * (i + 1)
-                seq = node_seq[start:end]
-                f.write('%s\n' % ' 0 '.join(map(str, seq)))
+    nodes = set()
 
-
-def get_node_seqs(input_seq):
-    with open(input_seq) as input_seq_file:
-        for seq_line in input_seq_file:
-            road_segment_seq = json.loads(seq_line)
-            if len(road_segment_seq) < 10:
-                continue
-            else:
-                _node_seq = segments2node_seq(road_segment_seq)
-                yield _node_seq
-
-
-def segments2node_seq(road_segment_seq):
-    nodes = []
-    is_head = True
-    for road_segment in road_segment_seq:
-        if is_head:
-            node = road_segment["target"] if road_segment["heading"] == "forward" else road_segment["source"]
-            nodes.append(node)
-            is_head = False
-        else:
-            if road_segment["heading"] == "forward":
-                _source = road_segment["source"]
-                _target = road_segment["target"]
-            else:
-                _source = road_segment["target"]
-                _target = road_segment["source"]
-            nodes.append(_source)
-            nodes.append(_target)
-    return nodes
+    with open(trajectory_emb) as emb_file:
+        for line in emb_file:
+            nodes.add(line.strip().split(' ')[0])
+        return nodes
 
 
 if __name__ == '__main__':
 
-    main(shortest_path='sanfrancisco/sequence/sf_trajectory_road_segment.sequence',
-         trajectory='sanfrancisco/sequence/sf_trajectory_sequence.node',
-         shortest_emb='',
+    main(shortest_emb='../my_model_distance_window/porto/sequence/sf_trajectory_road_segment.sequence',
+         trajectory_emb='porto/sequence/sf_trajectory_sequence.node',
          output_node='',
          output_emb='')
