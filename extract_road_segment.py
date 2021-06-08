@@ -70,6 +70,8 @@ with open(city + r'_LINE.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\tpriority\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
+        if source == target:
+            continue
         if float(reverse) >= 0.0:
             network.write(str(source) + " " + str(target) + " " + str(priority))
             network.write("\n")
@@ -83,6 +85,8 @@ with open(city + r'.network', 'w+') as network:
     network.write("source_node_id\ttarget_node_id\n")
     for road_segment in road_segments:
         gid, osm_id, class_id, source, target, reverse, priority = road_segment
+        if source == target:
+            continue
         network.write(str(source) + " " + str(target))
         network.write("\n")
 
