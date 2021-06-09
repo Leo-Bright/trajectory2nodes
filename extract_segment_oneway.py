@@ -24,6 +24,6 @@ def extract_segment_oneway(road_segments_file, output_file, oneway_file):
 
 
 if __name__ == '__main__':
-    extract_segment_oneway(road_segments_file='porto/dataset/all_road_segments_dict_old.porto',
-                           output_file='porto/dataset/pt_road_segments_oneway_old.json',
-                           oneway_file='porto/dataset/pt_road_segments_old.oneway')
+    extract_segment_oneway(road_segments_file='newyork/dataset/all_road_segments_dict.newyork',
+                           output_file='newyork/dataset/newyork_road_segments_oneway.json',
+                           oneway_file='newyork/dataset/newyork_road_segments.oneway')

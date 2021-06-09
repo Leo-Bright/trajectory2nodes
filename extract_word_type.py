@@ -20,6 +20,6 @@ def extract_word_type(road_segments_file, network_file, word_type_file):
 
 
 if __name__ == '__main__':
-    extract_word_type(road_segments_file='porto/dataset/all_road_segments_dict_old.porto',
-                      network_file='porto/dataset/porto_old.network',
-                      word_type_file='porto/dataset/pt_word_old.type')
+    extract_word_type(road_segments_file='newyork/dataset/all_road_segments_dict.newyork',
+                      network_file='newyork/dataset/newyork.network',
+                      word_type_file='newyork/dataset/newyork_word.type')
